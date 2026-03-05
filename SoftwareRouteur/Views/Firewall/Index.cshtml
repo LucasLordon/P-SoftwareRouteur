@@ -1,18 +1,375 @@
-@model TModel
+<link rel="stylesheet" href="~/css/firewall.css" asp-append-version="true"/>
 
+@model List<FirewallRule>
 @{
-    Layout = null;
+    ViewData["Title"] = "Gestion des règles";
+    var clients = ViewBag.Clients as List<Client> ?? new List<Client>();
+    var ruleCount = Model.Count;
 }
 
-<!DOCTYPE html>
-
-<html>
-<head>
-    <title>title</title>
-</head>
-<body>
-<div>
-      
+<!-- Page header -->
+<div class="sh-page-header">
+    <div>
+        <h1 class="sh-page-title">Gestion des règles</h1>
+        <p class="sh-page-subtitle">Configurer les règles de filtrage Internet</p>
+    </div>
+    <button class="sh-btn-primary" onclick="document.getElementById('addModal').classList.add('show')">
+        <i class="bi bi-plus-lg"></i> Ajouter une règle
+    </button>
 </div>
-</body>
-</html>
+
+<!-- Rules card -->
+<div class="sh-card">
+    <div class="sh-card-header">
+        <h2 class="sh-card-title">Règles existantes (<span id="visibleCount">@ruleCount</span> / @ruleCount)</h2>
+    </div>
+
+    <!-- Filters -->
+    <div class="sh-filters">
+        <div>
+            <label class="sh-filter-label">Recherche</label>
+            <div class="sh-search-wrapper">
+                <i class="bi bi-search"></i>
+                <input type="text" class="sh-input sh-input-search" id="searchInput"
+                       placeholder="Client ou destination..." oninput="filterTable(); showAutocomplete()"
+                       onfocus="showAutocomplete()" autocomplete="off"/>
+                <div class="sh-autocomplete" id="autocompleteList"></div>
+            </div>
+        </div>
+        <div>
+            <label class="sh-filter-label">Filtrer par type</label>
+            <select class="sh-input" id="filterType" onchange="filterTable()">
+                <option value="">Tous les types</option>
+                <option value="domain">domain</option>
+                <option value="ip">ip</option>
+                <option value="cidr">cidr</option>
+            </select>
+        </div>
+        <div>
+            <label class="sh-filter-label">Filtrer par action</label>
+            <select class="sh-input" id="filterAction" onchange="filterTable()">
+                <option value="">Toutes les actions</option>
+                <option value="deny">deny</option>
+                <option value="allow">allow</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Table -->
+    @if (Model.Any())
+    {
+        <table class="sh-table" id="rulesTable">
+            <thead>
+            <tr>
+                <th class="sh-sortable" data-col="0" onclick="sortTable(0)">
+                    Client <span class="sh-sort-icon">⇅</span>
+                </th>
+                <th class="sh-sortable" data-col="1" onclick="sortTable(1)">
+                    Type <span class="sh-sort-icon">⇅</span>
+                </th>
+                <th class="sh-sortable" data-col="2" onclick="sortTable(2)">
+                    Destination <span class="sh-sort-icon">⇅</span>
+                </th>
+                <th class="sh-sortable" data-col="3" onclick="sortTable(3)">
+                    Action <span class="sh-sort-icon">⇅</span>
+                </th>
+                <th style="text-align: right;">Actions</th>
+            </tr>
+            </thead>
+            <tbody id="rulesTableBody">
+            @foreach (var rule in Model)
+            {
+                <tr data-client="@rule.Client?.Hostname?.ToLower()"
+                    data-dest="@rule.Destination.ToLower()"
+                    data-type="@rule.RuleType"
+                    data-action="@rule.Action">
+                    <td class="sh-col-client">@rule.Client?.Hostname</td>
+                    <td><span class="sh-badge sh-badge-type">@rule.RuleType</span></td>
+                    <td class="sh-col-dest">@rule.Destination</td>
+                    <td>
+                        <span class="sh-badge @(rule.Action == "deny" ? "sh-badge-deny" : "sh-badge-allow")">
+                            @rule.Action
+                        </span>
+                    </td>
+                    <td class="sh-col-actions">
+                        <button class="sh-action-btn" title="Modifier"
+                                onclick="openEditModal(@rule.Id, @rule.ClientId, '@rule.RuleType', '@rule.Destination', '@rule.Action')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form method="post" asp-action="Delete" style="display:inline"
+                              onsubmit="return confirm('Supprimer cette règle ?')">
+                            <input type="hidden" name="id" value="@rule.Id"/>
+                            <button type="submit" class="sh-action-btn sh-delete" title="Supprimer">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="sh-empty">
+            <i class="bi bi-shield-slash"></i>
+            <p>Aucune règle configurée. Cliquez sur « Ajouter une règle » pour commencer.</p>
+        </div>
+    }
+</div>
+
+<!-- Add Modal -->
+<div class="sh-modal-backdrop" id="addModal" onclick="if(event.target===this) this.classList.remove('show')">
+    <div class="sh-modal">
+        <div class="sh-modal-header">
+            <h3 class="sh-modal-title">Ajouter une règle</h3>
+            <button class="sh-modal-close" onclick="document.getElementById('addModal').classList.remove('show')">&times;</button>
+        </div>
+        <form method="post" asp-action="Create">
+            <div class="sh-modal-body">
+                <div class="sh-form-group">
+                    <label class="sh-form-label">Client</label>
+                    <select name="clientId" class="sh-input" required>
+                        <option value="" disabled selected>Sélectionner un client...</option>
+                        @foreach (var client in clients)
+                        {
+                            <option value="@client.Id">@client.Hostname (@client.IpAddress)</option>
+                        }
+                    </select>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">Type</label>
+                    <select name="ruleType" class="sh-input" required>
+                        <option value="domain">Domaine</option>
+                        <option value="ip">IP</option>
+                        <option value="cidr">CIDR</option>
+                    </select>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">Destination</label>
+                    <input type="text" name="destination" class="sh-input"
+                           placeholder="ex: www.youtube.com ou 172.217.0.0/16" required/>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">Action</label>
+                    <select name="action" class="sh-input" required>
+                        <option value="deny">Bloquer (deny)</option>
+                        <option value="allow">Autoriser (allow)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sh-modal-footer">
+                <button type="button" class="sh-btn-cancel"
+                        onclick="document.getElementById('addModal').classList.remove('show')">Annuler</button>
+                <button type="submit" class="sh-btn-submit">
+                    <i class="bi bi-plus-lg"></i> Ajouter
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="sh-modal-backdrop" id="editModal" onclick="if(event.target===this) this.classList.remove('show')">
+    <div class="sh-modal">
+        <div class="sh-modal-header">
+            <h3 class="sh-modal-title">Modifier la règle</h3>
+            <button class="sh-modal-close" onclick="document.getElementById('editModal').classList.remove('show')">&times;</button>
+        </div>
+        <form method="post" asp-action="Edit">
+            <input type="hidden" name="id" id="editId"/>
+            <div class="sh-modal-body">
+                <div class="sh-form-group">
+                    <label class="sh-form-label">Client</label>
+                    <select name="clientId" id="editClientId" class="sh-input" required>
+                        @foreach (var client in clients)
+                        {
+                            <option value="@client.Id">@client.Hostname (@client.IpAddress)</option>
+                        }
+                    </select>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">Type</label>
+                    <select name="ruleType" id="editRuleType" class="sh-input" required>
+                        <option value="domain">Domaine</option>
+                        <option value="ip">IP</option>
+                        <option value="cidr">CIDR</option>
+                    </select>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">Destination</label>
+                    <input type="text" name="destination" id="editDestination" class="sh-input" required/>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">Action</label>
+                    <select name="action" id="editAction" class="sh-input" required>
+                        <option value="deny">Bloquer (deny)</option>
+                        <option value="allow">Autoriser (allow)</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sh-modal-footer">
+                <button type="button" class="sh-btn-cancel"
+                        onclick="document.getElementById('editModal').classList.remove('show')">Annuler</button>
+                <button type="submit" class="sh-btn-submit">Enregistrer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+
+        // Auto-fill search from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const searchParam = urlParams.get('search');
+        if (searchParam) {
+            document.getElementById('searchInput').value = searchParam;
+            filterTable();
+        }
+        
+        // ── Autocomplete data from server ──
+        const autocompleteData = [
+            @foreach (var rule in Model)
+            {
+            @: { label: "client", value: "@rule.Client?.Hostname" },
+            @: { label: "destination", value: "@rule.Destination" },
+            }
+            @foreach (var client in clients)
+            {
+            @: { label: "client", value: "@client.Hostname" },
+            }
+        ];
+
+        // Deduplicate
+        const uniqueSuggestions = [];
+        const seen = new Set();
+        autocompleteData.forEach(item => {
+            const key = item.label + ':' + item.value;
+            if (!seen.has(key) && item.value) {
+                seen.add(key);
+                uniqueSuggestions.push(item);
+            }
+        });
+
+        function showAutocomplete() {
+            const input = document.getElementById('searchInput');
+            const list = document.getElementById('autocompleteList');
+            const val = input.value.toLowerCase();
+
+            if (!val) {
+                list.classList.remove('show');
+                return;
+            }
+
+            const matches = uniqueSuggestions
+                .filter(s => s.value.toLowerCase().includes(val))
+                .slice(0, 5);
+
+            if (matches.length === 0) {
+                list.classList.remove('show');
+                return;
+            }
+
+            list.innerHTML = matches.map(m =>
+                `<div class="sh-autocomplete-item" onclick="selectSuggestion('${m.value}')">
+                    <span class="sh-ac-label">${m.label}</span>
+                    <span>${m.value}</span>
+                </div>`
+            ).join('');
+            list.classList.add('show');
+        }
+
+        function selectSuggestion(value) {
+            document.getElementById('searchInput').value = value;
+            document.getElementById('autocompleteList').classList.remove('show');
+            filterTable();
+        }
+
+        // Close autocomplete on click outside
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.sh-search-wrapper')) {
+                document.getElementById('autocompleteList').classList.remove('show');
+            }
+        });
+
+        // ── Filter table ──
+        function filterTable() {
+            const search = document.getElementById('searchInput').value.toLowerCase();
+            const typeFilter = document.getElementById('filterType').value;
+            const actionFilter = document.getElementById('filterAction').value;
+            const rows = document.querySelectorAll('#rulesTableBody tr');
+            let visible = 0;
+
+            rows.forEach(row => {
+                const client = row.dataset.client || '';
+                const dest = row.dataset.dest || '';
+                const type = row.dataset.type || '';
+                const action = row.dataset.action || '';
+
+                const matchSearch = !search || client.includes(search) || dest.includes(search);
+                const matchType = !typeFilter || type === typeFilter;
+                const matchAction = !actionFilter || action === actionFilter;
+
+                if (matchSearch && matchType && matchAction) {
+                    row.style.display = '';
+                    visible++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            document.getElementById('visibleCount').textContent = visible;
+        }
+
+        // ── Sort table ──
+        let sortCol = -1;
+        let sortAsc = true;
+
+        function sortTable(colIndex) {
+            const tbody = document.getElementById('rulesTableBody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            const headers = document.querySelectorAll('#rulesTable thead th.sh-sortable');
+
+            if (sortCol === colIndex) {
+                sortAsc = !sortAsc;
+            } else {
+                sortCol = colIndex;
+                sortAsc = true;
+            }
+
+            headers.forEach(th => th.classList.remove('sh-sort-active'));
+            headers[colIndex].classList.add('sh-sort-active');
+
+            const keys = ['client', 'type', 'dest', 'action'];
+            const key = keys[colIndex];
+
+            rows.sort((a, b) => {
+                const valA = a.dataset[key] || '';
+                const valB = b.dataset[key] || '';
+                const cmp = valA.localeCompare(valB);
+                return sortAsc ? cmp : -cmp;
+            });
+
+            rows.forEach(row => tbody.appendChild(row));
+
+            const icon = headers[colIndex].querySelector('.sh-sort-icon');
+            icon.textContent = sortAsc ? '↑' : '↓';
+            headers.forEach((th, i) => {
+                if (i !== colIndex) {
+                    th.querySelector('.sh-sort-icon').textContent = '⇅';
+                }
+            });
+        }
+
+        // ── Edit modal ──
+        function openEditModal(id, clientId, ruleType, destination, action) {
+            document.getElementById('editId').value = id;
+            document.getElementById('editClientId').value = clientId;
+            document.getElementById('editRuleType').value = ruleType;
+            document.getElementById('editDestination').value = destination;
+            document.getElementById('editAction').value = action;
+            document.getElementById('editModal').classList.add('show');
+        }
+    </script>
+}
