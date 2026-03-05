@@ -1,35 +1,52 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SoftwareRouteur.Data;
-using SoftwareRouteur.Models;
 
 namespace SoftwareRouteur.Controllers;
 
+[Authorize]
 public class HomeController : Controller
 {
-    private readonly ILogger<HomeController> _logger;
     private readonly AppDbContext _context;
 
-    public HomeController(ILogger<HomeController> logger,AppDbContext context)
+    public HomeController(AppDbContext context)
     {
-        _logger = logger;
         _context = context;
     }
 
     public IActionResult Index()
     {
         var clients = _context.Clients.ToList();
-        return View(clients);
-    }
 
-    public IActionResult Privacy()
-    {
+        // Dernier statut de chaque client depuis monitoring
+        var clientStatuses = new Dictionary<int, bool>();
+        foreach (var client in clients)
+        {
+            var latest = _context.Monitorings
+                .Where(m => m.ClientIp == client.IpAddress)
+                .OrderByDescending(m => m.CheckedAt)
+                .FirstOrDefault();
+
+            clientStatuses[client.Id] = latest?.IsOnline ?? false;
+        }
+
+        // Nombre de règles
+        var firewallRules = _context.FirewallRules;
+        int activeRules = firewallRules.Count();
+
+        // Blocages aujourd'hui
+        var today = DateTime.Today;
+        int blockedToday = _context.BlockedTraffics
+            .Count(b => b.LoggedAt >= today);
+
+        ViewBag.Clients = clients;
+        ViewBag.ClientStatuses = clientStatuses;
+        ViewBag.TotalClients = clients.Count;
+        ViewBag.OnlineClients = clientStatuses.Count(s => s.Value);
+        ViewBag.ActiveRules = activeRules;
+        ViewBag.BlockedToday = blockedToday;
+
         return View();
-    }
-
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
-    {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
     }
 }

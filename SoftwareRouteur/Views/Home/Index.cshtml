@@ -1,34 +1,93 @@
-﻿@model List<Client>
-
+﻿@using SoftwareRouteur.Models
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
+    var clients = ViewBag.Clients as List<Client> ?? new List<Client>();
+    var statuses = ViewBag.ClientStatuses as Dictionary<int, bool> ?? new Dictionary<int, bool>();
+    int totalClients = ViewBag.TotalClients ?? 0;
+    int onlineClients = ViewBag.OnlineClients ?? 0;
+    int activeRules = ViewBag.ActiveRules ?? 0;
+    int blockedToday = ViewBag.BlockedToday ?? 0;
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Page header -->
+<div class="sh-page-header">
+    <div>
+        <h1 class="sh-page-title">Dashboard</h1>
+        <p class="sh-page-subtitle">Vue d'ensemble du réseau domestique</p>
+    </div>
 </div>
 
-<h2>Liste des clients</h2>
+<!-- Stats cards -->
+<div class="sh-stats-grid">
+    <div class="sh-stat-card">
+        <div class="sh-stat-header">
+            <i class="bi bi-wifi"></i>
+            <span>Clients Total</span>
+        </div>
+        <div class="sh-stat-value">@totalClients</div>
+    </div>
+    <div class="sh-stat-card">
+        <div class="sh-stat-header">
+            <i class="bi bi-activity"></i>
+            <span>En ligne</span>
+        </div>
+        <div class="sh-stat-value">@onlineClients</div>
+    </div>
+    <div class="sh-stat-card">
+        <div class="sh-stat-header">
+            <i class="bi bi-shield-check"></i>
+            <span>Règles actives</span>
+        </div>
+        <div class="sh-stat-value">@activeRules</div>
+    </div>
+    <div class="sh-stat-card">
+        <div class="sh-stat-header">
+            <i class="bi bi-shield-x"></i>
+            <span>Bloqués aujourd'hui</span>
+        </div>
+        <div class="sh-stat-value">@blockedToday</div>
+    </div>
+</div>
 
-<table border="1">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Hostname</th>
-        <th>IP Address</th>
-        <th>Created At</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach (var client in Model)
+<!-- Clients table -->
+<div class="sh-card">
+    <div class="sh-card-header" style="display: flex; align-items: center; justify-content: space-between;">
+        <h2 class="sh-card-title">Clients du réseau</h2>
+        <a asp-controller="Client" asp-action="Index" class="sh-link">Gérer les clients →</a>
+    </div>
+
+    @if (clients.Any())
     {
-        <tr>
-            <td>@client.Id</td>
-            <td>@client.Hostname</td>
-            <td>@client.IpAddress</td>
-            <td>@client.CreatedAt</td>
-        </tr>
+        <table class="sh-table">
+            <thead>
+            <tr>
+                <th>Hostname</th>
+                <th>Adresse IP</th>
+                <th>Statut</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var client in clients)
+            {
+                var isOnline = statuses.ContainsKey(client.Id) && statuses[client.Id];
+                <tr>
+                    <td class="sh-col-client">@client.Hostname</td>
+                    <td class="sh-col-dest">@client.IpAddress</td>
+                    <td>
+                        <span class="sh-badge @(isOnline ? "sh-badge-allow" : "sh-badge-offline")">
+                            @(isOnline ? "online" : "offline")
+                        </span>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
     }
-    </tbody>
-</table>
+    else
+    {
+        <div class="sh-empty">
+            <i class="bi bi-people"></i>
+            <p>Aucun client enregistré.</p>
+        </div>
+    }
+</div>
