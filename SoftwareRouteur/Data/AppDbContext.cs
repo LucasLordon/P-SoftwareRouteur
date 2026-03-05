@@ -13,4 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Client> Clients { get; set; }
     public DbSet<FirewallRule> FirewallRules { get; set; }
     public DbSet<AdminUser> AdminUsers { get; set; }
+    public DbSet<Monitoring> Monitorings { get; set; }
+    public DbSet<BlockedTraffic> BlockedTraffics { get; set; }
+
 }
