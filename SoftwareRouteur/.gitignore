@@ -5,6 +5,9 @@
 # dotenv
 .env
 
+# Production config
+appsettings.Production.json
+
 
 ##################################################
 ## USER-SPECIFIC FILES
@@ -16,12 +19,18 @@
 *.userosscache
 *.sln.docstates
 *.userprefs
+*.DotSettings.user
 mono_crash.*
 
 
 ##################################################
-## BUILD RESULTS
+## BUILD OUTPUTS
 ##################################################
+
+# Explicit build folders
+bin/
+obj/
+publish/
 
 [Dd]ebug/
 [Dd]ebugPublic/
