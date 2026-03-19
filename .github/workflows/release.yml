@@ -1,0 +1,48 @@
+name: Build and Release SafeHome
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 9
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Restore dependencies
+        run: dotnet restore SoftwareRouteur/SoftwareRouteur.csproj
+
+      - name: Publish webapp
+        run: |
+          dotnet publish SoftwareRouteur/SoftwareRouteur.csproj \
+            -c Release \
+            -o ./release/webapp \
+            --runtime linux-x64 \
+            --self-contained false
+
+      - name: Write version info
+        run: |
+          TAG=${GITHUB_REF#refs/tags/v}
+          echo "{\"version\": \"$TAG\", \"date\": \"$(date -u +%Y-%m-%d)\", \"tag\": \"${GITHUB_REF#refs/tags/}\"}" > ./release/version.json
+
+      - name: Package release
+        run: |
+          cd release
+          tar -czf ../safehome-${GITHUB_REF#refs/tags/}.tar.gz .
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: safehome-*.tar.gz
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
