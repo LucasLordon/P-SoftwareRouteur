@@ -1,3 +1,9 @@
+/* ══════════════════════════════════════════════════════════════
+   SafeHome Admin — site.css
+   Inclut : design desktop + responsive mobile
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Reset & base ── */
 html {
   font-size: 14px;
 }
@@ -21,15 +27,20 @@ body {
   margin-bottom: 60px;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+.form-floating > .form-control-plaintext::placeholder,
+.form-floating > .form-control::placeholder {
   color: var(--bs-secondary-color);
   text-align: end;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+.form-floating > .form-control-plaintext:focus::placeholder,
+.form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
 
+/* ══════════════════════════════════════
+   CSS Variables
+   ══════════════════════════════════════ */
 :root {
   --sh-dark: #111827;
   --sh-gray-50: #f9fafb;
@@ -49,13 +60,168 @@ body {
   --sh-green-700: #15803d;
   --sh-blue-600: #2681dc;
   --sh-blue-50: #cffaff;
+
+  /* Mobile nav height — utilisé pour le padding-bottom du body */
+  --sh-mobile-nav-height: 64px;
 }
 
 /* ══════════════════════════════════════
-   SafeHome Admin - Dashboard
+   Header & Navigation (desktop)
    ══════════════════════════════════════ */
 
-/* ── Stats grid ── */
+/* Repris depuis _Layout.cshtml <style> — centralisé ici */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--sh-gray-50);
+  color: var(--sh-gray-900);
+  margin: 0;
+}
+
+.sh-header {
+  background: #fff;
+  border-bottom: 1px solid var(--sh-gray-200);
+  padding: 0 2rem;
+}
+
+.sh-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.sh-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  text-decoration: none;
+  color: var(--sh-dark);
+}
+
+.sh-brand-icon {
+  width: 32px;
+  height: 32px;
+  border: 2px solid var(--sh-gray-300);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sh-brand-icon i { font-size: 16px; color: var(--sh-gray-500); }
+
+.sh-brand-text {
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+}
+
+.sh-header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.sh-user {
+  font-size: 0.875rem;
+  color: var(--sh-gray-500);
+}
+
+.sh-logout-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.375rem 0.875rem;
+  border: 1px solid var(--sh-gray-200);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--sh-gray-700);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.sh-logout-btn:hover {
+  background: var(--sh-gray-50);
+  color: var(--sh-gray-900);
+}
+
+/* ── Tabs desktop ── */
+.sh-tabs {
+  display: flex;
+  gap: 0;
+  margin-top: -1px;
+}
+
+.sh-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--sh-gray-500);
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  transition: all 0.15s;
+}
+
+.sh-tab:hover { color: var(--sh-gray-700); }
+
+.sh-tab.active {
+  color: var(--sh-gray-900);
+  border-bottom-color: var(--sh-gray-900);
+}
+
+.sh-tab i { font-size: 1rem; }
+
+/* ── Main content ── */
+.sh-main {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* ── Alerts ── */
+.sh-alert {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sh-alert-success {
+  background: var(--sh-green-50);
+  color: var(--sh-green-700);
+  border: 1px solid #bbf7d0;
+}
+
+.sh-alert-error {
+  background: var(--sh-red-50);
+  color: var(--sh-red-700);
+  border: 1px solid #fecaca;
+}
+
+/* ── Footer ── */
+.sh-footer {
+  text-align: center;
+  padding: 2rem;
+  font-size: 0.75rem;
+  color: var(--sh-gray-400);
+}
+
+/* ══════════════════════════════════════
+   Dashboard — Stats grid
+   ══════════════════════════════════════ */
+
 .sh-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -80,9 +246,7 @@ body {
   margin-bottom: 0.5rem;
 }
 
-.sh-stat-header i {
-  font-size: 1rem;
-}
+.sh-stat-header i { font-size: 1rem; }
 
 .sh-stat-value {
   font-size: 2rem;
@@ -101,9 +265,7 @@ body {
   transition: color 0.15s;
 }
 
-.sh-link:hover {
-  color: var(--sh-gray-900);
-}
+.sh-link:hover { color: var(--sh-gray-900); }
 
 /* ── Offline badge ── */
 .sh-badge-offline {
@@ -113,10 +275,9 @@ body {
 }
 
 /* ══════════════════════════════════════
-   SafeHome Admin - Firewall Rules Page
+   Page header
    ══════════════════════════════════════ */
 
-/* ── Page header ── */
 .sh-page-header {
   display: flex;
   align-items: flex-start;
@@ -157,7 +318,10 @@ body {
 
 .sh-btn-primary:hover { background: var(--sh-gray-700); color: #fff; }
 
-/* ── Card container ── */
+/* ══════════════════════════════════════
+   Card container
+   ══════════════════════════════════════ */
+
 .sh-card {
   background: #fff;
   border: 1px solid var(--sh-gray-200);
@@ -178,7 +342,10 @@ body {
   font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
 }
 
-/* ── Filters row ── */
+/* ══════════════════════════════════════
+   Filters row
+   ══════════════════════════════════════ */
+
 .sh-filters {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -219,9 +386,7 @@ body {
   position: relative;
 }
 
-.sh-input-search {
-  padding-left: 2.25rem;
-}
+.sh-input-search { padding-left: 2.25rem; }
 
 .sh-search-wrapper .bi-search {
   position: absolute;
@@ -281,7 +446,10 @@ select.sh-input {
   padding-right: 2rem;
 }
 
-/* ── Table ── */
+/* ══════════════════════════════════════
+   Table (desktop)
+   ══════════════════════════════════════ */
+
 .sh-table {
   width: 100%;
   border-collapse: collapse;
@@ -348,7 +516,10 @@ select.sh-input {
   white-space: nowrap;
 }
 
-/* ── Badges ── */
+/* ══════════════════════════════════════
+   Badges
+   ══════════════════════════════════════ */
+
 .sh-badge {
   display: inline-block;
   padding: 0.2rem 0.625rem;
@@ -377,7 +548,10 @@ select.sh-input {
   border: 1px solid #bbf7d0;
 }
 
-/* ── Action buttons ── */
+/* ══════════════════════════════════════
+   Action buttons
+   ══════════════════════════════════════ */
+
 .sh-action-btn {
   display: inline-flex;
   align-items: center;
@@ -412,7 +586,10 @@ select.sh-input {
   border-color: #3eb2ef;
 }
 
-/* ── Empty state ── */
+/* ══════════════════════════════════════
+   Empty state
+   ══════════════════════════════════════ */
+
 .sh-empty {
   text-align: center;
   padding: 3rem 1.5rem;
@@ -422,7 +599,10 @@ select.sh-input {
 .sh-empty i { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
 .sh-empty p { margin: 0; font-size: 0.9375rem; }
 
-/* ── Modal ── */
+/* ══════════════════════════════════════
+   Modal (desktop)
+   ══════════════════════════════════════ */
+
 .sh-modal-backdrop {
   display: none;
   position: fixed;
@@ -446,7 +626,7 @@ select.sh-input {
 
 @keyframes sh-modal-in {
   from { opacity: 0; transform: scale(0.95) translateY(10px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
 }
 
 .sh-modal-header {
@@ -521,3 +701,473 @@ select.sh-input {
 }
 
 .sh-btn-submit:hover { background: var(--sh-gray-700); }
+
+/* ══════════════════════════════════════
+   Bottom nav mobile (caché sur desktop)
+   ══════════════════════════════════════ */
+
+.sh-bottom-nav {
+  display: none; /* visible seulement sur mobile */
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — Tablette (≤ 900px)
+   ══════════════════════════════════════ */
+
+@media (max-width: 900px) {
+
+  /* Stats : 2 colonnes */
+  .sh-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  /* Filters : 1 colonne */
+  .sh-filters {
+    grid-template-columns: 1fr;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+
+  .sh-main {
+    padding: 1.5rem 1rem;
+  }
+
+  .sh-header {
+    padding: 0 1rem;
+  }
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE — Mobile (≤ 640px)
+   ══════════════════════════════════════ */
+
+@media (max-width: 640px) {
+
+  /* ── Body : espace pour la bottom nav ── */
+  body {
+    padding-bottom: var(--sh-mobile-nav-height);
+    margin-bottom: 0;
+  }
+
+  /* ── Header mobile ── */
+  .sh-header {
+    padding: 0 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 8px rgba(0,0,0,0.06);
+  }
+
+  .sh-header-top {
+    height: 56px;
+  }
+
+  /* Cacher le nom d'utilisateur sur mobile (gardé dans bottom nav) */
+  .sh-user {
+    display: none;
+  }
+
+  /* Texte logout raccourci — on garde juste l'icône */
+  .sh-logout-btn span.sh-logout-label {
+    display: none;
+  }
+
+  .sh-logout-btn {
+    padding: 0.375rem 0.625rem;
+  }
+
+  /* ── Tabs desktop : masqués sur mobile ── */
+  .sh-tabs {
+    display: none;
+  }
+
+  /* ── Bottom navigation bar ── */
+  .sh-bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: var(--sh-mobile-nav-height);
+    background: #fff;
+    border-top: 1px solid var(--sh-gray-200);
+    z-index: 200;
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+  }
+
+  .sh-bottom-nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    text-decoration: none;
+    color: var(--sh-gray-400);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    padding: 0.5rem 0.25rem;
+    transition: color 0.15s;
+    border-top: 2px solid transparent;
+    margin-top: -1px;
+  }
+
+  .sh-bottom-nav-item i {
+    font-size: 1.375rem;
+    line-height: 1;
+  }
+
+  .sh-bottom-nav-item:hover {
+    color: var(--sh-gray-600);
+  }
+
+  .sh-bottom-nav-item.active {
+    color: var(--sh-gray-900);
+    border-top-color: var(--sh-gray-900);
+  }
+
+  /* ── Main content ── */
+  .sh-main {
+    padding: 1rem;
+  }
+
+  /* ── Page header : stack vertical + bouton pleine largeur ── */
+  .sh-page-header {
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .sh-page-title {
+    font-size: 1.375rem;
+  }
+
+  .sh-btn-primary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    border-radius: 10px;
+  }
+
+  /* ── Stats grid : 2 colonnes sur mobile ── */
+  .sh-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .sh-stat-card {
+    padding: 1rem;
+  }
+
+  .sh-stat-value {
+    font-size: 1.625rem;
+  }
+
+  /* ── Card ── */
+  .sh-card {
+    border-radius: 10px;
+  }
+
+  .sh-card-header {
+    padding: 1rem;
+  }
+
+  .sh-card-title {
+    font-size: 0.9375rem;
+  }
+
+  /* ── Filters : colonne unique ── */
+  .sh-filters {
+    grid-template-columns: 1fr;
+    padding: 0.75rem 1rem;
+    gap: 0.625rem;
+  }
+
+  /* ── Table → Cards mobile ──
+     Layout de chaque carte :
+       [Hostname]               ← titre (sh-col-client)
+       [destination.com]        ← monospace (sh-col-dest)
+       [domain] [deny] [✏] [🗑] ← badges + actions sur la même ligne
+  ── */
+  .sh-table thead {
+    display: none;
+  }
+
+  .sh-table,
+  .sh-table tbody,
+  .sh-table tr {
+    display: block;
+    width: 100%;
+  }
+
+  /* Chaque ligne = carte */
+  .sh-table tbody tr {
+    background: #fff;
+    border: 1px solid var(--sh-gray-200);
+    border-radius: 10px;
+    margin: 0 1rem 0.75rem 1rem;
+    width: calc(100% - 2rem);
+    padding: 0.875rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: box-shadow 0.15s;
+    /* Grille interne :
+       ligne 1 = client (pleine largeur)
+       ligne 2 = destination (pleine largeur)
+       ligne 3 = badges + actions côte à côte */
+    display: grid;
+    grid-template-rows: auto auto auto;
+    text-align: center;
+  }
+
+  .sh-table tbody tr:last-child {
+    border-bottom: 1px solid var(--sh-gray-200);
+  }
+
+  .sh-table tbody tr:hover {
+    box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+    background: #fff;
+  }
+
+  /* Toutes les td en block par défaut */
+  .sh-table td {
+    display: block;
+    padding: 0;
+    border: none;
+    font-size: 0.875rem;
+  }
+
+  /* ── Ligne 1 : Hostname ── */
+  .sh-table td.sh-col-client {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--sh-gray-900);
+    padding-bottom: 0.375rem;
+    margin-bottom: 0.375rem;
+    border-bottom: 1px solid var(--sh-gray-100);
+  }
+
+  /* ── Ligne 2 : Destination ── */
+  .sh-table td.sh-col-dest {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.8125rem;
+    color: var(--sh-gray-700);
+    word-break: break-all;
+    padding-bottom: 0.5rem;
+  }
+
+  /* ── Tableau Firewall Rules uniquement (sh-table-rules) ──
+     Masque la colonne type (nth-child 2) et fusionne badges + actions
+     sur la même ligne. Les autres tableaux (dashboard, clients) ne sont pas affectés. */
+
+  /* Masquer la td "type" — spécifique au tableau rules */
+  .sh-table-rules td:nth-child(2) {
+    display: none;
+  }
+
+  /* Grille 2 colonnes pour les lignes rules :
+     col 1 = badges   col 2 = boutons action */
+  .sh-table-rules tbody tr {
+    grid-template-columns: 1fr auto;
+  }
+
+  .sh-table-rules td.sh-col-client {
+    grid-column: 1 / -1;
+  }
+
+  .sh-table-rules td.sh-col-dest {
+    grid-column: 1 / -1;
+  }
+
+  /* td action (4e colonne) : ligne du bas, côté gauche — affiche les badges */
+  .sh-table-rules td:nth-child(4) {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-top: 1px solid var(--sh-gray-100);
+    grid-column: 1;
+    grid-row: 3;
+    justify-content: center;
+  }
+
+  /* Pseudo-élément qui injecte visuellement le badge type devant le badge action */
+  .sh-table-rules td:nth-child(4)::before {
+    content: attr(data-badge-type);
+    display: inline-block;
+    padding: 0.2rem 0.625rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    background: var(--sh-gray-100);
+    color: var(--sh-gray-700);
+    border: 1px solid var(--sh-gray-200);
+  }
+
+  /* Boutons action : ligne du bas, côté droit */
+  .sh-table td.sh-col-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--sh-gray-100);
+  }
+
+  .sh-table-rules td.sh-col-actions {
+    grid-column: 1;
+    grid-row: 4;
+  }
+
+  .sh-action-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    border-radius: 8px;
+  }
+
+  /* ── Alerts ── */
+  .sh-alert {
+    font-size: 0.8125rem;
+    padding: 0.625rem 0.875rem;
+  }
+
+  /* ── Modal : plein écran sur mobile ── */
+  .sh-modal-backdrop {
+    align-items: flex-end; /* slide depuis le bas */
+  }
+
+  .sh-modal {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+    animation: sh-modal-slide-up 0.25s ease-out;
+    max-height: 92vh;
+    overflow-y: auto;
+  }
+
+  @keyframes sh-modal-slide-up {
+    from { transform: translateY(100%); opacity: 0.8; }
+    to   { transform: translateY(0);    opacity: 1;   }
+  }
+
+  .sh-modal-header {
+    padding: 1rem 1.25rem;
+    position: sticky;
+    top: 0;
+    background: #fff;
+    z-index: 1;
+    /* Handle bar visuel en haut du modal */
+    border-radius: 16px 16px 0 0;
+    flex-direction: column;
+  }
+
+  /* Handle bar (trait gris centré) pour signifier le swipe */
+  .sh-modal-header::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    background: var(--sh-gray-200);
+    border-radius: 2px;
+    margin: 0 auto 0.875rem auto;
+  }
+
+  .sh-modal-title {
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .sh-modal-close {
+    position: absolute;
+    right: 1rem;
+    top: 1.5rem;
+  }
+
+  .sh-modal-body {
+    padding: 1rem 1.25rem;
+  }
+
+  .sh-modal-footer {
+    padding: 0.875rem 1.25rem;
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-radius: 0;
+  }
+
+  .sh-btn-submit,
+  .sh-btn-cancel {
+    width: 100%;
+    text-align: center;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    border-radius: 8px;
+    justify-content: center;
+  }
+
+  /* ── Inputs : taille touch-friendly ── */
+  .sh-input {
+    padding: 0.625rem 0.875rem;
+    font-size: 1rem; /* évite le zoom auto sur iOS */
+  }
+
+  .sh-input-search {
+    padding-left: 2.5rem;
+  }
+
+  /* ── Footer ── */
+  .sh-footer {
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.6875rem;
+  }
+}
+
+/* ══════════════════════════════════════
+   Layout.cshtml.css — fusionné ici
+   ══════════════════════════════════════ */
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+a { color: #0077cc; }
+
+.btn-primary {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+  color: #fff;
+  background-color: #1b6ec2;
+  border-color: #1861ac;
+}
+
+.border-top    { border-top: 1px solid #e5e5e5; }
+.border-bottom { border-bottom: 1px solid #e5e5e5; }
+
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}

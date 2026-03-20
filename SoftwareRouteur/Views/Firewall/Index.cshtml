@@ -58,7 +58,7 @@
     <!-- Table -->
     @if (Model.Any())
     {
-        <table class="sh-table" id="rulesTable">
+        <table class="sh-table sh-table-rules" id="rulesTable">
             <thead>
             <tr>
                 <th class="sh-sortable" data-col="0" onclick="sortTable(0)">
@@ -86,7 +86,7 @@
                     <td class="sh-col-client">@rule.Client?.Hostname</td>
                     <td><span class="sh-badge sh-badge-type">@rule.RuleType</span></td>
                     <td class="sh-col-dest">@rule.Destination</td>
-                    <td>
+                    <td data-badge-type="@rule.RuleType">
                         <span class="sh-badge @(rule.Action == "deny" ? "sh-badge-deny" : "sh-badge-allow")">
                             @rule.Action
                         </span>
