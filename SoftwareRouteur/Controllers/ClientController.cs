@@ -1,3 +1,4 @@
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
@@ -33,6 +34,12 @@ public class ClientController : Controller
             return RedirectToAction("Index");
         }
 
+        if (!IPAddress.TryParse(ipAddress, out _))
+        {
+            TempData["Error"] = string.Format(_localizer["Error_InvalidIp"].Value, ipAddress);
+            return RedirectToAction("Index");
+        }
+
         var client = new Client
         {
             Hostname = hostname,
@@ -48,6 +55,18 @@ public class ClientController : Controller
     [HttpPost]
     public IActionResult Edit(int id, string hostname, string ipAddress)
     {
+        if (string.IsNullOrWhiteSpace(hostname) || string.IsNullOrWhiteSpace(ipAddress))
+        {
+            TempData["Error"] = _localizer["Error_Required"].Value;
+            return RedirectToAction("Index");
+        }
+
+        if (!IPAddress.TryParse(ipAddress, out _))
+        {
+            TempData["Error"] = string.Format(_localizer["Error_InvalidIp"].Value, ipAddress);
+            return RedirectToAction("Index");
+        }
+
         var client = _context.Clients.Find(id);
         if (client != null)
         {
