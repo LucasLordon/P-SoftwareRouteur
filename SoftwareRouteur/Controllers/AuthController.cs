@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Localization;
 using SoftwareRouteur.Data;
 using SoftwareRouteur.ViewModels;
@@ -10,13 +11,18 @@ namespace SoftwareRouteur.Controllers;
 
 public class AuthController : Controller
 {
+    private const int MaxFailedAttempts = 5;
+    private static readonly TimeSpan LockoutDuration = TimeSpan.FromMinutes(15);
+
     private readonly AppDbContext _context;
     private readonly IStringLocalizer<AuthController> _localizer;
+    private readonly IMemoryCache _cache;
 
-    public AuthController(AppDbContext context, IStringLocalizer<AuthController> localizer)
+    public AuthController(AppDbContext context, IStringLocalizer<AuthController> localizer, IMemoryCache cache)
     {
         _context = context;
         _localizer = localizer;
+        _cache = cache;
     }
 
     [HttpGet]
@@ -31,14 +37,22 @@ public class AuthController : Controller
     [HttpPost]
     public async Task<IActionResult> Login(string username, string password)
     {
+        var ip = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        var cacheKey = $"login_attempts_{ip}";
+
+        if (_cache.TryGetValue(cacheKey, out int attempts) && attempts >= MaxFailedAttempts)
+            return View(new LoginViewModel { Error = _localizer["Error_TooManyAttempts"].Value });
+
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
             return View(new LoginViewModel { Error = _localizer["Error_FieldsRequired"].Value });
 
-        var user = _context.AdminUsers
-            .FirstOrDefault(u => u.Username == username);
+        var user = _context.AdminUsers.FirstOrDefault(u => u.Username == username);
 
         if (user == null)
+        {
+            RecordFailedAttempt(cacheKey);
             return View(new LoginViewModel { Error = _localizer["Error_InvalidCredentials"].Value });
+        }
 
         bool valid = false;
         try
@@ -51,7 +65,12 @@ public class AuthController : Controller
         }
 
         if (!valid)
+        {
+            RecordFailedAttempt(cacheKey);
             return View(new LoginViewModel { Error = _localizer["Error_InvalidCredentials"].Value });
+        }
+
+        _cache.Remove(cacheKey);
 
         var claims = new List<Claim>
         {
@@ -73,6 +92,12 @@ public class AuthController : Controller
         );
 
         return RedirectToAction("Index", "Home");
+    }
+
+    private void RecordFailedAttempt(string cacheKey)
+    {
+        var attempts = _cache.TryGetValue(cacheKey, out int current) ? current : 0;
+        _cache.Set(cacheKey, attempts + 1, LockoutDuration);
     }
 
     [HttpPost]
