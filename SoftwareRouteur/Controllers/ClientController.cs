@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using SoftwareRouteur.Data;
 using SoftwareRouteur.Models;
+using SoftwareRouteur.ViewModels;
 
 namespace SoftwareRouteur.Controllers;
 
@@ -21,8 +22,11 @@ public class ClientController : Controller
 
     public IActionResult Index()
     {
-        var clients = _context.Clients.ToList();
-        return View(clients);
+        var vm = new ClientIndexViewModel
+        {
+            Clients = _context.Clients.ToList()
+        };
+        return View(vm);
     }
 
     [HttpPost]

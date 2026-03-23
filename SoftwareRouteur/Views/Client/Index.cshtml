@@ -1,8 +1,7 @@
-@model List<Client>
+@model ClientIndexViewModel
 @inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["Page_Title"].Value;
-    var clientCount = Model.Count;
 }
 
 <!-- Page header -->
@@ -19,10 +18,10 @@
 <!-- Clients card -->
 <div class="sh-card">
     <div class="sh-card-header">
-        <h2 class="sh-card-title">@Localizer["Table_Title", clientCount]</h2>
+        <h2 class="sh-card-title">@Localizer["Table_Title", Model.TotalClients]</h2>
     </div>
 
-    @if (Model.Any())
+    @if (Model.Clients.Any())
     {
         <table class="sh-table">
             <thead>
@@ -33,7 +32,7 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var client in Model)
+            @foreach (var client in Model.Clients)
             {
                 <tr>
                     <td class="sh-col-client">@client.Hostname</td>
