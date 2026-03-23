@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using SoftwareRouteur.Data;
+using SoftwareRouteur.ViewModels;
 using System.Security.Claims;
 
 namespace SoftwareRouteur.Controllers;
@@ -22,27 +23,21 @@ public class AuthController : Controller
         if (User.Identity?.IsAuthenticated == true)
             return RedirectToAction("Index", "Home");
 
-        return View();
+        return View(new LoginViewModel());
     }
 
     [HttpPost]
     public async Task<IActionResult> Login(string username, string password)
     {
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-        {
-            ViewBag.Error = "Veuillez remplir tous les champs.";
-            return View();
-        }
+            return View(new LoginViewModel { Error = "Veuillez remplir tous les champs." });
 
         // Chercher l'utilisateur en base
         var user = _context.AdminUsers
             .FirstOrDefault(u => u.Username == username);
 
         if (user == null)
-        {
-            ViewBag.Error = "Nom d'utilisateur ou mot de passe incorrect.";
-            return View();
-        }
+            return View(new LoginViewModel { Error = "Nom d'utilisateur ou mot de passe incorrect." });
 
         // Vérifier le mot de passe avec BCrypt
         bool valid = false;
@@ -52,15 +47,11 @@ public class AuthController : Controller
         }
         catch
         {
-            ViewBag.Error = "Erreur de vérification du mot de passe.";
-            return View();
+            return View(new LoginViewModel { Error = "Erreur de vérification du mot de passe." });
         }
 
         if (!valid)
-        {
-            ViewBag.Error = "Nom d'utilisateur ou mot de passe incorrect.";
-            return View();
-        }
+            return View(new LoginViewModel { Error = "Nom d'utilisateur ou mot de passe incorrect." });
 
         // Créer les claims et le cookie d'authentification
         var claims = new List<Claim>

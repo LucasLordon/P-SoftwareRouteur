@@ -1,12 +1,6 @@
-﻿@using SoftwareRouteur.Models
+﻿@model DashboardViewModel
 @{
     ViewData["Title"] = "Dashboard";
-    var clients = ViewBag.Clients as List<Client> ?? new List<Client>();
-    var statuses = ViewBag.ClientStatuses as Dictionary<int, bool> ?? new Dictionary<int, bool>();
-    int totalClients = ViewBag.TotalClients ?? 0;
-    int onlineClients = ViewBag.OnlineClients ?? 0;
-    int activeRules = ViewBag.ActiveRules ?? 0;
-    int blockedToday = ViewBag.BlockedToday ?? 0;
 }
 
 <!-- Page header -->
@@ -24,28 +18,28 @@
             <i class="bi bi-wifi"></i>
             <span>Clients Total</span>
         </div>
-        <div class="sh-stat-value">@totalClients</div>
+        <div class="sh-stat-value">@Model.TotalClients</div>
     </div>
     <div class="sh-stat-card">
         <div class="sh-stat-header">
             <i class="bi bi-activity"></i>
             <span>En ligne</span>
         </div>
-        <div class="sh-stat-value">@onlineClients</div>
+        <div class="sh-stat-value">@Model.OnlineClients</div>
     </div>
     <div class="sh-stat-card">
         <div class="sh-stat-header">
             <i class="bi bi-shield-check"></i>
             <span>Règles actives</span>
         </div>
-        <div class="sh-stat-value">@activeRules</div>
+        <div class="sh-stat-value">@Model.ActiveRules</div>
     </div>
     <div class="sh-stat-card">
         <div class="sh-stat-header">
             <i class="bi bi-shield-x"></i>
             <span>Bloqués aujourd'hui</span>
         </div>
-        <div class="sh-stat-value">@blockedToday</div>
+        <div class="sh-stat-value">@Model.BlockedToday</div>
     </div>
 </div>
 
@@ -56,7 +50,7 @@
         <a asp-controller="Client" asp-action="Index" class="sh-link">Gérer les clients →</a>
     </div>
 
-    @if (clients.Any())
+    @if (Model.Clients.Any())
     {
         <table class="sh-table">
             <thead>
@@ -67,9 +61,9 @@
             </tr>
             </thead>
             <tbody>
-            @foreach (var client in clients)
+            @foreach (var client in Model.Clients)
             {
-                var isOnline = statuses.ContainsKey(client.Id) && statuses[client.Id];
+                var isOnline = Model.ClientStatuses.ContainsKey(client.Id) && Model.ClientStatuses[client.Id];
                 <tr>
                     <td class="sh-col-client">@client.Hostname</td>
                     <td class="sh-col-dest">@client.IpAddress</td>

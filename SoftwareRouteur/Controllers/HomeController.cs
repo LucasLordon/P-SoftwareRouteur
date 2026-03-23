@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoftwareRouteur.Data;
+using SoftwareRouteur.ViewModels;
 
 namespace SoftwareRouteur.Controllers;
 
@@ -40,13 +41,16 @@ public class HomeController : Controller
         int blockedToday = _context.BlockedTraffics
             .Count(b => b.LoggedAt >= today);
 
-        ViewBag.Clients = clients;
-        ViewBag.ClientStatuses = clientStatuses;
-        ViewBag.TotalClients = clients.Count;
-        ViewBag.OnlineClients = clientStatuses.Count(s => s.Value);
-        ViewBag.ActiveRules = activeRules;
-        ViewBag.BlockedToday = blockedToday;
+        var vm = new DashboardViewModel
+        {
+            Clients = clients,
+            ClientStatuses = clientStatuses,
+            TotalClients = clients.Count,
+            OnlineClients = clientStatuses.Count(s => s.Value),
+            ActiveRules = activeRules,
+            BlockedToday = blockedToday
+        };
 
-        return View();
+        return View(vm);
     }
 }

@@ -1,10 +1,9 @@
 <link rel="stylesheet" href="~/css/firewall.css" asp-append-version="true"/>
 
-@model List<FirewallRule>
+@model FirewallIndexViewModel
 @{
     ViewData["Title"] = "Gestion des règles";
-    var clients = ViewBag.Clients as List<Client> ?? new List<Client>();
-    var ruleCount = Model.Count;
+    var ruleCount = Model.Rules.Count;
 }
 
 <!-- Page header -->
@@ -56,7 +55,7 @@
     </div>
 
     <!-- Table -->
-    @if (Model.Any())
+    @if (Model.Rules.Any())
     {
         <table class="sh-table sh-table-rules" id="rulesTable">
             <thead>
@@ -77,7 +76,7 @@
             </tr>
             </thead>
             <tbody id="rulesTableBody">
-            @foreach (var rule in Model)
+            @foreach (var rule in Model.Rules)
             {
                 <tr data-client="@rule.Client?.Hostname?.ToLower()"
                     data-dest="@rule.Destination.ToLower()"
@@ -131,7 +130,7 @@
                     <label class="sh-form-label">Client</label>
                     <select name="clientId" class="sh-input" required>
                         <option value="" disabled selected>Sélectionner un client...</option>
-                        @foreach (var client in clients)
+                        @foreach (var client in Model.Clients)
                         {
                             <option value="@client.Id">@client.Hostname (@client.IpAddress)</option>
                         }
@@ -182,7 +181,7 @@
                 <div class="sh-form-group">
                     <label class="sh-form-label">Client</label>
                     <select name="clientId" id="editClientId" class="sh-input" required>
-                        @foreach (var client in clients)
+                        @foreach (var client in Model.Clients)
                         {
                             <option value="@client.Id">@client.Hostname (@client.IpAddress)</option>
                         }
@@ -230,12 +229,12 @@
         
         // ── Autocomplete data from server ──
         const autocompleteData = [
-            @foreach (var rule in Model)
+            @foreach (var rule in Model.Rules)
             {
             @: { label: "client", value: "@rule.Client?.Hostname" },
             @: { label: "destination", value: "@rule.Destination" },
             }
-            @foreach (var client in clients)
+            @foreach (var client in Model.Clients)
             {
             @: { label: "client", value: "@client.Hostname" },
             }

@@ -1,3 +1,4 @@
+@model LoginViewModel
 @{
     ViewData["Title"] = "Connexion";
     Layout = null; // Pas de layout, page standalone
@@ -27,11 +28,11 @@
     <div class="login-card">
         <h2 class="login-card-title">Connexion</h2>
 
-        @if (ViewBag.Error != null)
+        @if (Model.Error != null)
         {
             <div class="login-error">
                 <i class="bi bi-exclamation-triangle-fill"></i>
-                @ViewBag.Error
+                @Model.Error
             </div>
         }
 

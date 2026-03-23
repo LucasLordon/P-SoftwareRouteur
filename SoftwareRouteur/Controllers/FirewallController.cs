@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoftwareRouteur.Data;
 using SoftwareRouteur.Models;
+using SoftwareRouteur.ViewModels;
 using Renci.SshNet;
 using Renci.SshNet.Common;
 
@@ -21,11 +22,12 @@ public class FirewallController : Controller
     // Liste des règles
     public IActionResult Index()
     {
-        var rules = _context.FirewallRules
-            .Include(r => r.Client)
-            .ToList();
-        ViewBag.Clients = _context.Clients.ToList();
-        return View(rules);
+        var vm = new FirewallIndexViewModel
+        {
+            Rules = _context.FirewallRules.Include(r => r.Client).ToList(),
+            Clients = _context.Clients.ToList()
+        };
+        return View(vm);
     }
 
     // Ajouter une règle
