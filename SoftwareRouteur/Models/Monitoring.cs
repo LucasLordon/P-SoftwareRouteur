@@ -9,7 +9,7 @@ public class Monitoring
     public int Id { get; set; }
 
     [Column("client_ip")]
-    public string ClientIp { get; set; }
+    public required string ClientIp { get; set; }
 
     [Column("hostname")]
     public string? Hostname { get; set; }

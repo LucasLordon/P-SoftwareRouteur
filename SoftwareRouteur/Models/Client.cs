@@ -9,12 +9,12 @@ public class Client
     public int Id { get; set; }
     
     [Column("hostname")]
-    public string Hostname { get; set; }
-    
+    public required string Hostname { get; set; }
+
     [Column("ip_address")]
-    public string IpAddress { get; set; }
+    public required string IpAddress { get; set; }
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
 
-    public List<FirewallRule> FirewallRules { get; set; }
+    public List<FirewallRule> FirewallRules { get; set; } = new();
 }

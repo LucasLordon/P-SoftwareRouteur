@@ -9,10 +9,10 @@ public class BlockedTraffic
     public int Id { get; set; }
 
     [Column("src_ip")]
-    public string SrcIp { get; set; }
+    public required string SrcIp { get; set; }
 
     [Column("dst_ip")]
-    public string DstIp { get; set; }
+    public required string DstIp { get; set; }
 
     [Column("logged_at")]
     public DateTime LoggedAt { get; set; }
