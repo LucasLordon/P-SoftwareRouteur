@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using SoftwareRouteur.Data;
 using SoftwareRouteur.Models;
 using SoftwareRouteur.ViewModels;
@@ -13,13 +14,14 @@ namespace SoftwareRouteur.Controllers;
 public class FirewallController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IStringLocalizer<FirewallController> _localizer;
 
-    public FirewallController(AppDbContext context)
+    public FirewallController(AppDbContext context, IStringLocalizer<FirewallController> localizer)
     {
         _context = context;
+        _localizer = localizer;
     }
 
-    // Liste des règles
     public IActionResult Index()
     {
         var vm = new FirewallIndexViewModel
@@ -30,7 +32,6 @@ public class FirewallController : Controller
         return View(vm);
     }
 
-    // Ajouter une règle
     [HttpPost]
     public IActionResult Create(int clientId, string ruleType, string destination, string action)
     {
@@ -44,11 +45,11 @@ public class FirewallController : Controller
         };
         _context.FirewallRules.Add(rule);
         _context.SaveChanges();
+        TempData["Success"] = _localizer["Success_Created"].Value;
         //ApplyFirewallRules();
         return RedirectToAction("Index");
     }
 
-    // Supprimer une règle
     [HttpPost]
     public IActionResult Delete(int id)
     {
@@ -57,11 +58,12 @@ public class FirewallController : Controller
         {
             _context.FirewallRules.Remove(rule);
             _context.SaveChanges();
+            TempData["Success"] = _localizer["Success_Deleted"].Value;
             //ApplyFirewallRules();
         }
         return RedirectToAction("Index");
     }
-    
+
     [HttpPost]
     public IActionResult Edit(int id, int clientId, string ruleType, string destination, string action)
     {
@@ -73,6 +75,7 @@ public class FirewallController : Controller
             rule.Destination = destination;
             rule.Action = action;
             _context.SaveChanges();
+            TempData["Success"] = _localizer["Success_Updated"].Value;
         }
         return RedirectToAction("Index");
     }
@@ -100,18 +103,18 @@ public class FirewallController : Controller
 
             if (cmd.ExitStatus == 0)
             {
-                TempData["Success"] = "Règles du pare-feu mises à jour avec succès.";
+                TempData["Success"] = _localizer["Success_Applied"].Value;
                 return true;
             }
             else
             {
-                TempData["Error"] = $"Erreur lors de la synchronisation : {cmd.Error}";
+                TempData["Error"] = string.Format(_localizer["Error_Sync"].Value, cmd.Error);
                 return false;
             }
         }
         catch (Exception ex)
         {
-            TempData["Error"] = $"Impossible de se connecter à VM2 : {ex.Message}";
+            TempData["Error"] = string.Format(_localizer["Error_Connect"].Value, ex.Message);
             return false;
         }
     }

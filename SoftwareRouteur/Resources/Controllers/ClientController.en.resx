@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Error_Required" xml:space="preserve"><value>Hostname and IP address are required.</value></data>
+  <data name="Success_Created" xml:space="preserve"><value>Client « {0} » successfully added.</value></data>
+  <data name="Success_Updated" xml:space="preserve"><value>Client « {0} » successfully updated.</value></data>
+  <data name="Success_Deleted" xml:space="preserve"><value>Client « {0} » deleted.</value></data>
+</root>

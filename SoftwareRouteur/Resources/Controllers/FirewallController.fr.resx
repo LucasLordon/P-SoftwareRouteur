@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Success_Created" xml:space="preserve"><value>Règle ajoutée avec succès.</value></data>
+  <data name="Success_Updated" xml:space="preserve"><value>Règle modifiée avec succès.</value></data>
+  <data name="Success_Deleted" xml:space="preserve"><value>Règle supprimée.</value></data>
+  <data name="Success_Applied" xml:space="preserve"><value>Règles du pare-feu mises à jour avec succès.</value></data>
+  <data name="Error_Sync" xml:space="preserve"><value>Erreur lors de la synchronisation : {0}</value></data>
+  <data name="Error_Connect" xml:space="preserve"><value>Impossible de se connecter à VM2 : {0}</value></data>
+</root>

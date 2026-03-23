@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Localization;
 using SoftwareRouteur.Data;
 using SoftwareRouteur.ViewModels;
 using System.Security.Claims;
@@ -10,16 +11,17 @@ namespace SoftwareRouteur.Controllers;
 public class AuthController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IStringLocalizer<AuthController> _localizer;
 
-    public AuthController(AppDbContext context)
+    public AuthController(AppDbContext context, IStringLocalizer<AuthController> localizer)
     {
         _context = context;
+        _localizer = localizer;
     }
 
     [HttpGet]
     public IActionResult Login()
     {
-        // Si déjà connecté, rediriger vers le dashboard
         if (User.Identity?.IsAuthenticated == true)
             return RedirectToAction("Index", "Home");
 
@@ -30,16 +32,14 @@ public class AuthController : Controller
     public async Task<IActionResult> Login(string username, string password)
     {
         if (string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-            return View(new LoginViewModel { Error = "Veuillez remplir tous les champs." });
+            return View(new LoginViewModel { Error = _localizer["Error_FieldsRequired"].Value });
 
-        // Chercher l'utilisateur en base
         var user = _context.AdminUsers
             .FirstOrDefault(u => u.Username == username);
 
         if (user == null)
-            return View(new LoginViewModel { Error = "Nom d'utilisateur ou mot de passe incorrect." });
+            return View(new LoginViewModel { Error = _localizer["Error_InvalidCredentials"].Value });
 
-        // Vérifier le mot de passe avec BCrypt
         bool valid = false;
         try
         {
@@ -47,13 +47,12 @@ public class AuthController : Controller
         }
         catch
         {
-            return View(new LoginViewModel { Error = "Erreur de vérification du mot de passe." });
+            return View(new LoginViewModel { Error = _localizer["Error_PasswordVerification"].Value });
         }
 
         if (!valid)
-            return View(new LoginViewModel { Error = "Nom d'utilisateur ou mot de passe incorrect." });
+            return View(new LoginViewModel { Error = _localizer["Error_InvalidCredentials"].Value });
 
-        // Créer les claims et le cookie d'authentification
         var claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),

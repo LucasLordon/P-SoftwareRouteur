@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Localization;
 using SoftwareRouteur.Data;
 using SoftwareRouteur.Models;
 
@@ -9,10 +10,12 @@ namespace SoftwareRouteur.Controllers;
 public class ClientController : Controller
 {
     private readonly AppDbContext _context;
+    private readonly IStringLocalizer<ClientController> _localizer;
 
-    public ClientController(AppDbContext context)
+    public ClientController(AppDbContext context, IStringLocalizer<ClientController> localizer)
     {
         _context = context;
+        _localizer = localizer;
     }
 
     public IActionResult Index()
@@ -26,7 +29,7 @@ public class ClientController : Controller
     {
         if (string.IsNullOrWhiteSpace(hostname) || string.IsNullOrWhiteSpace(ipAddress))
         {
-            TempData["Error"] = "Le hostname et l'adresse IP sont requis.";
+            TempData["Error"] = _localizer["Error_Required"].Value;
             return RedirectToAction("Index");
         }
 
@@ -38,7 +41,7 @@ public class ClientController : Controller
         };
         _context.Clients.Add(client);
         _context.SaveChanges();
-        TempData["Success"] = $"Client « {hostname} » ajouté avec succès.";
+        TempData["Success"] = string.Format(_localizer["Success_Created"].Value, hostname);
         return RedirectToAction("Index");
     }
 
@@ -51,7 +54,7 @@ public class ClientController : Controller
             client.Hostname = hostname;
             client.IpAddress = ipAddress;
             _context.SaveChanges();
-            TempData["Success"] = $"Client « {hostname} » modifié avec succès.";
+            TempData["Success"] = string.Format(_localizer["Success_Updated"].Value, hostname);
         }
         return RedirectToAction("Index");
     }
@@ -64,7 +67,7 @@ public class ClientController : Controller
         {
             _context.Clients.Remove(client);
             _context.SaveChanges();
-            TempData["Success"] = $"Client « {client.Hostname} » supprimé.";
+            TempData["Success"] = string.Format(_localizer["Success_Deleted"].Value, client.Hostname);
         }
         return RedirectToAction("Index");
     }

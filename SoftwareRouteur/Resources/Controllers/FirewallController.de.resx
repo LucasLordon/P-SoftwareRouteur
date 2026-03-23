@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Success_Created" xml:space="preserve"><value>Regel erfolgreich hinzugefügt.</value></data>
+  <data name="Success_Updated" xml:space="preserve"><value>Regel erfolgreich aktualisiert.</value></data>
+  <data name="Success_Deleted" xml:space="preserve"><value>Regel gelöscht.</value></data>
+  <data name="Success_Applied" xml:space="preserve"><value>Firewall-Regeln erfolgreich aktualisiert.</value></data>
+  <data name="Error_Sync" xml:space="preserve"><value>Synchronisationsfehler: {0}</value></data>
+  <data name="Error_Connect" xml:space="preserve"><value>Verbindung zu VM2 nicht möglich: {0}</value></data>
+</root>
