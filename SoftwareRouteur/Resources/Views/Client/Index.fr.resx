@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Page_Title" xml:space="preserve"><value>Gestion des clients</value></data>
+  <data name="Page_Subtitle" xml:space="preserve"><value>Ajouter, modifier ou supprimer des clients du réseau</value></data>
+  <data name="Btn_Add" xml:space="preserve"><value>Ajouter un client</value></data>
+  <data name="Table_Title" xml:space="preserve"><value>Clients existants ({0})</value></data>
+  <data name="Col_Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="Tooltip_ViewRules" xml:space="preserve"><value>Voir les règles du client</value></data>
+  <data name="Tooltip_Edit" xml:space="preserve"><value>Modifier</value></data>
+  <data name="Tooltip_Delete" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Confirm_Delete" xml:space="preserve"><value>Supprimer ce client ? Les règles associées seront également supprimées.</value></data>
+  <data name="Empty" xml:space="preserve"><value>Aucun client enregistré. Cliquez sur « Ajouter un client » pour commencer.</value></data>
+  <data name="Modal_Add_Title" xml:space="preserve"><value>Ajouter un client</value></data>
+  <data name="Modal_Edit_Title" xml:space="preserve"><value>Modifier le client</value></data>
+  <data name="Field_Hostname" xml:space="preserve"><value>Hostname</value></data>
+  <data name="Field_IP" xml:space="preserve"><value>Adresse IP</value></data>
+  <data name="Placeholder_Hostname" xml:space="preserve"><value>ex: laptop-alice</value></data>
+  <data name="Placeholder_IP" xml:space="preserve"><value>ex: 192.168.15.101</value></data>
+  <data name="Btn_Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Btn_Submit_Add" xml:space="preserve"><value>Ajouter</value></data>
+  <data name="Btn_Save" xml:space="preserve"><value>Enregistrer</value></data>
+</root>

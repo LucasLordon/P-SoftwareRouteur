@@ -1,24 +1,25 @@
 @model List<Client>
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Gestion des clients";
+    ViewData["Title"] = Localizer["Page_Title"].Value;
     var clientCount = Model.Count;
 }
 
 <!-- Page header -->
 <div class="sh-page-header">
     <div>
-        <h1 class="sh-page-title">Gestion des clients</h1>
-        <p class="sh-page-subtitle">Ajouter, modifier ou supprimer des clients du réseau</p>
+        <h1 class="sh-page-title">@Localizer["Page_Title"]</h1>
+        <p class="sh-page-subtitle">@Localizer["Page_Subtitle"]</p>
     </div>
     <button class="sh-btn-primary" onclick="document.getElementById('addClientModal').classList.add('show')">
-        <i class="bi bi-plus-lg"></i> Ajouter un client
+        <i class="bi bi-plus-lg"></i> @Localizer["Btn_Add"]
     </button>
 </div>
 
 <!-- Clients card -->
 <div class="sh-card">
     <div class="sh-card-header">
-        <h2 class="sh-card-title">Clients existants (@clientCount)</h2>
+        <h2 class="sh-card-title">@Localizer["Table_Title", clientCount]</h2>
     </div>
 
     @if (Model.Any())
@@ -27,8 +28,8 @@
             <thead>
             <tr>
                 <th>Hostname</th>
-                <th>Adresse IP</th>
-                <th class="sh-col-actions">Actions</th>
+                <th>IP</th>
+                <th class="sh-col-actions">@Localizer["Col_Actions"]</th>
             </tr>
             </thead>
             <tbody>
@@ -40,18 +41,18 @@
                     <td class="sh-col-actions">
                         <form method="post" asp-controller="Firewall" asp-action="Index" asp-route-search="@client.Hostname" class="sh-form-inline">
                             <input type="hidden" name="id" value="@client.Id"/>
-                            <button type="submit" class="sh-action-btn sh-eye" title="Voir les règles du client">
+                            <button type="submit" class="sh-action-btn sh-eye" title="@Localizer["Tooltip_ViewRules"]">
                                 <i class="bi bi-eye"></i>
                             </button>
                         </form>
-                        <button class="sh-action-btn" title="Modifier"
+                        <button class="sh-action-btn" title="@Localizer["Tooltip_Edit"]"
                                 onclick="openEditClientModal(@client.Id, '@client.Hostname', '@client.IpAddress')">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <form method="post" asp-action="Delete" class="sh-form-inline"
-                              onsubmit="return confirm('Supprimer ce client ? Les règles associées seront également supprimées.')">
+                              onsubmit="return confirm('@Localizer["Confirm_Delete"]')">
                             <input type="hidden" name="id" value="@client.Id"/>
-                            <button type="submit" class="sh-action-btn sh-delete" title="Supprimer">
+                            <button type="submit" class="sh-action-btn sh-delete" title="@Localizer["Tooltip_Delete"]">
                                 <i class="bi bi-trash3"></i>
                             </button>
                         </form>
@@ -65,7 +66,7 @@
     {
         <div class="sh-empty">
             <i class="bi bi-people"></i>
-            <p>Aucun client enregistré. Cliquez sur « Ajouter un client » pour commencer.</p>
+            <p>@Localizer["Empty"]</p>
         </div>
     }
 </div>
@@ -74,29 +75,29 @@
 <div class="sh-modal-backdrop" id="addClientModal" onclick="if(event.target===this) this.classList.remove('show')">
     <div class="sh-modal">
         <div class="sh-modal-header">
-            <h3 class="sh-modal-title">Ajouter un client</h3>
+            <h3 class="sh-modal-title">@Localizer["Modal_Add_Title"]</h3>
             <button class="sh-modal-close" onclick="document.getElementById('addClientModal').classList.remove('show')">&times;</button>
         </div>
         <form method="post" asp-action="Create">
             <div class="sh-modal-body">
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Hostname</label>
+                    <label class="sh-form-label">@Localizer["Field_Hostname"]</label>
                     <input type="text" name="hostname" class="sh-input"
-                           placeholder="ex: laptop-alice" required/>
+                           placeholder="@Localizer["Placeholder_Hostname"]" required/>
                 </div>
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Adresse IP</label>
+                    <label class="sh-form-label">@Localizer["Field_IP"]</label>
                     <input type="text" name="ipAddress" class="sh-input"
-                           placeholder="ex: 192.168.15.101" required
+                           placeholder="@Localizer["Placeholder_IP"]" required
                            pattern="^(\d{1,3}\.){3}\d{1,3}$"
                            title="Format: xxx.xxx.xxx.xxx"/>
                 </div>
             </div>
             <div class="sh-modal-footer">
                 <button type="button" class="sh-btn-cancel"
-                        onclick="document.getElementById('addClientModal').classList.remove('show')">Annuler</button>
+                        onclick="document.getElementById('addClientModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
                 <button type="submit" class="sh-btn-submit">
-                    <i class="bi bi-plus-lg"></i> Ajouter
+                    <i class="bi bi-plus-lg"></i> @Localizer["Btn_Submit_Add"]
                 </button>
             </div>
         </form>
@@ -107,18 +108,18 @@
 <div class="sh-modal-backdrop" id="editClientModal" onclick="if(event.target===this) this.classList.remove('show')">
     <div class="sh-modal">
         <div class="sh-modal-header">
-            <h3 class="sh-modal-title">Modifier le client</h3>
+            <h3 class="sh-modal-title">@Localizer["Modal_Edit_Title"]</h3>
             <button class="sh-modal-close" onclick="document.getElementById('editClientModal').classList.remove('show')">&times;</button>
         </div>
         <form method="post" asp-action="Edit">
             <input type="hidden" name="id" id="editClientId"/>
             <div class="sh-modal-body">
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Hostname</label>
+                    <label class="sh-form-label">@Localizer["Field_Hostname"]</label>
                     <input type="text" name="hostname" id="editClientHostname" class="sh-input" required/>
                 </div>
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Adresse IP</label>
+                    <label class="sh-form-label">@Localizer["Field_IP"]</label>
                     <input type="text" name="ipAddress" id="editClientIp" class="sh-input" required
                            pattern="^(\d{1,3}\.){3}\d{1,3}$"
                            title="Format: xxx.xxx.xxx.xxx"/>
@@ -126,8 +127,8 @@
             </div>
             <div class="sh-modal-footer">
                 <button type="button" class="sh-btn-cancel"
-                        onclick="document.getElementById('editClientModal').classList.remove('show')">Annuler</button>
-                <button type="submit" class="sh-btn-submit">Enregistrer</button>
+                        onclick="document.getElementById('editClientModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
+                <button type="submit" class="sh-btn-submit">@Localizer["Btn_Save"]</button>
             </div>
         </form>
     </div>

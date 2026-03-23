@@ -1,13 +1,14 @@
-﻿@model DashboardViewModel
+@model DashboardViewModel
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = Localizer["Page_Title"].Value;
 }
 
 <!-- Page header -->
 <div class="sh-page-header">
     <div>
-        <h1 class="sh-page-title">Dashboard</h1>
-        <p class="sh-page-subtitle">Vue d'ensemble du réseau domestique</p>
+        <h1 class="sh-page-title">@Localizer["Page_Title"]</h1>
+        <p class="sh-page-subtitle">@Localizer["Page_Subtitle"]</p>
     </div>
 </div>
 
@@ -16,28 +17,28 @@
     <div class="sh-stat-card">
         <div class="sh-stat-header">
             <i class="bi bi-wifi"></i>
-            <span>Clients Total</span>
+            <span>@Localizer["Stats_TotalClients"]</span>
         </div>
         <div class="sh-stat-value">@Model.TotalClients</div>
     </div>
     <div class="sh-stat-card">
         <div class="sh-stat-header">
             <i class="bi bi-activity"></i>
-            <span>En ligne</span>
+            <span>@Localizer["Stats_Online"]</span>
         </div>
         <div class="sh-stat-value">@Model.OnlineClients</div>
     </div>
     <div class="sh-stat-card">
         <div class="sh-stat-header">
             <i class="bi bi-shield-check"></i>
-            <span>Règles actives</span>
+            <span>@Localizer["Stats_ActiveRules"]</span>
         </div>
         <div class="sh-stat-value">@Model.ActiveRules</div>
     </div>
     <div class="sh-stat-card">
         <div class="sh-stat-header">
             <i class="bi bi-shield-x"></i>
-            <span>Bloqués aujourd'hui</span>
+            <span>@Localizer["Stats_BlockedToday"]</span>
         </div>
         <div class="sh-stat-value">@Model.BlockedToday</div>
     </div>
@@ -46,8 +47,8 @@
 <!-- Clients table -->
 <div class="sh-card">
     <div class="sh-card-header">
-        <h2 class="sh-card-title">Clients du réseau</h2>
-        <a asp-controller="Client" asp-action="Index" class="sh-link">Gérer les clients →</a>
+        <h2 class="sh-card-title">@Localizer["Table_Title"]</h2>
+        <a asp-controller="Client" asp-action="Index" class="sh-link">@Localizer["Manage_Link"]</a>
     </div>
 
     @if (Model.Clients.Any())
@@ -56,8 +57,8 @@
             <thead>
             <tr>
                 <th>Hostname</th>
-                <th>Adresse IP</th>
-                <th>Statut</th>
+                <th>IP</th>
+                <th>@Localizer["Col_Status"]</th>
             </tr>
             </thead>
             <tbody>
@@ -69,7 +70,7 @@
                     <td class="sh-col-dest">@client.IpAddress</td>
                     <td>
                         <span class="sh-badge @(isOnline ? "sh-badge-allow" : "sh-badge-offline")">
-                            @(isOnline ? "online" : "offline")
+                            @(isOnline ? Localizer["Badge_Online"] : Localizer["Badge_Offline"])
                         </span>
                     </td>
                 </tr>
@@ -81,7 +82,7 @@
     {
         <div class="sh-empty">
             <i class="bi bi-people"></i>
-            <p>Aucun client enregistré.</p>
+            <p>@Localizer["Empty"]</p>
         </div>
     }
 </div>

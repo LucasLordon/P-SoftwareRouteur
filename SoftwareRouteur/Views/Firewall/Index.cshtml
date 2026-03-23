@@ -1,53 +1,52 @@
-<link rel="stylesheet" href="~/css/firewall.css" asp-append-version="true"/>
-
 @model FirewallIndexViewModel
+@inject IViewLocalizer Localizer
 @{
-    ViewData["Title"] = "Gestion des règles";
+    ViewData["Title"] = Localizer["Page_Title"].Value;
     var ruleCount = Model.Rules.Count;
 }
 
 <!-- Page header -->
 <div class="sh-page-header">
     <div>
-        <h1 class="sh-page-title">Gestion des règles</h1>
-        <p class="sh-page-subtitle">Configurer les règles de filtrage Internet</p>
+        <h1 class="sh-page-title">@Localizer["Page_Title"]</h1>
+        <p class="sh-page-subtitle">@Localizer["Page_Subtitle"]</p>
     </div>
     <button class="sh-btn-primary" onclick="document.getElementById('addModal').classList.add('show')">
-        <i class="bi bi-plus-lg"></i> Ajouter une règle
+        <i class="bi bi-plus-lg"></i> @Localizer["Btn_Add"]
     </button>
 </div>
 
 <!-- Rules card -->
 <div class="sh-card">
     <div class="sh-card-header">
-        <h2 class="sh-card-title">Règles existantes (<span id="visibleCount">@ruleCount</span> / @ruleCount)</h2>
+        <h2 class="sh-card-title">@Localizer["Table_Label"] (<span id="visibleCount">@ruleCount</span> / @ruleCount)</h2>
     </div>
 
     <!-- Filters -->
     <div class="sh-filters">
         <div>
-            <label class="sh-filter-label">Recherche</label>
+            <label class="sh-filter-label">@Localizer["Filter_Search"]</label>
             <div class="sh-search-wrapper">
                 <i class="bi bi-search"></i>
                 <input type="text" class="sh-input sh-input-search" id="searchInput"
-                       placeholder="Client ou destination..." oninput="filterTable(); showAutocomplete()"
+                       placeholder="@Localizer["Filter_Search_Placeholder"]" oninput="filterTable(); showAutocomplete()"
                        onfocus="showAutocomplete()" autocomplete="off"/>
                 <div class="sh-autocomplete" id="autocompleteList"></div>
             </div>
         </div>
         <div>
-            <label class="sh-filter-label">Filtrer par type</label>
+            <label class="sh-filter-label">@Localizer["Filter_Type"]</label>
             <select class="sh-input" id="filterType" onchange="filterTable()">
-                <option value="">Tous les types</option>
+                <option value="">@Localizer["Filter_Type_All"]</option>
                 <option value="domain">domain</option>
                 <option value="ip">ip</option>
                 <option value="cidr">cidr</option>
             </select>
         </div>
         <div>
-            <label class="sh-filter-label">Filtrer par action</label>
+            <label class="sh-filter-label">@Localizer["Filter_Action_Label"]</label>
             <select class="sh-input" id="filterAction" onchange="filterTable()">
-                <option value="">Toutes les actions</option>
+                <option value="">@Localizer["Filter_Action_All"]</option>
                 <option value="deny">deny</option>
                 <option value="allow">allow</option>
             </select>
@@ -61,18 +60,18 @@
             <thead>
             <tr>
                 <th class="sh-sortable" data-col="0" onclick="sortTable(0)">
-                    Client <span class="sh-sort-icon">⇅</span>
+                    @Localizer["Col_Client"] <span class="sh-sort-icon">⇅</span>
                 </th>
                 <th class="sh-sortable" data-col="1" onclick="sortTable(1)">
-                    Type <span class="sh-sort-icon">⇅</span>
+                    @Localizer["Col_Type"] <span class="sh-sort-icon">⇅</span>
                 </th>
                 <th class="sh-sortable" data-col="2" onclick="sortTable(2)">
-                    Destination <span class="sh-sort-icon">⇅</span>
+                    @Localizer["Col_Dest"] <span class="sh-sort-icon">⇅</span>
                 </th>
                 <th class="sh-sortable" data-col="3" onclick="sortTable(3)">
-                    Action <span class="sh-sort-icon">⇅</span>
+                    @Localizer["Col_Action"] <span class="sh-sort-icon">⇅</span>
                 </th>
-                <th class="sh-col-actions">Actions</th>
+                <th class="sh-col-actions">@Localizer["Col_Actions"]</th>
             </tr>
             </thead>
             <tbody id="rulesTableBody">
@@ -91,14 +90,14 @@
                         </span>
                     </td>
                     <td class="sh-col-actions">
-                        <button class="sh-action-btn" title="Modifier"
+                        <button class="sh-action-btn" title="@Localizer["Tooltip_Edit"]"
                                 onclick="openEditModal(@rule.Id, @rule.ClientId, '@rule.RuleType', '@rule.Destination', '@rule.Action')">
                             <i class="bi bi-pencil"></i>
                         </button>
                         <form method="post" asp-action="Delete" class="sh-form-inline"
-                              onsubmit="return confirm('Supprimer cette règle ?')">
+                              onsubmit="return confirm('@Localizer["Confirm_Delete"]')">
                             <input type="hidden" name="id" value="@rule.Id"/>
-                            <button type="submit" class="sh-action-btn sh-delete" title="Supprimer">
+                            <button type="submit" class="sh-action-btn sh-delete" title="@Localizer["Tooltip_Delete"]">
                                 <i class="bi bi-trash3"></i>
                             </button>
                         </form>
@@ -112,7 +111,7 @@
     {
         <div class="sh-empty">
             <i class="bi bi-shield-slash"></i>
-            <p>Aucune règle configurée. Cliquez sur « Ajouter une règle » pour commencer.</p>
+            <p>@Localizer["Empty"]</p>
         </div>
     }
 </div>
@@ -121,15 +120,15 @@
 <div class="sh-modal-backdrop" id="addModal" onclick="if(event.target===this) this.classList.remove('show')">
     <div class="sh-modal">
         <div class="sh-modal-header">
-            <h3 class="sh-modal-title">Ajouter une règle</h3>
+            <h3 class="sh-modal-title">@Localizer["Modal_Add_Title"]</h3>
             <button class="sh-modal-close" onclick="document.getElementById('addModal').classList.remove('show')">&times;</button>
         </div>
         <form method="post" asp-action="Create">
             <div class="sh-modal-body">
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Client</label>
+                    <label class="sh-form-label">@Localizer["Field_Client"]</label>
                     <select name="clientId" class="sh-input" required>
-                        <option value="" disabled selected>Sélectionner un client...</option>
+                        <option value="" disabled selected>@Localizer["Select_Client"]</option>
                         @foreach (var client in Model.Clients)
                         {
                             <option value="@client.Id">@client.Hostname (@client.IpAddress)</option>
@@ -137,31 +136,31 @@
                     </select>
                 </div>
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Type</label>
+                    <label class="sh-form-label">@Localizer["Field_Type"]</label>
                     <select name="ruleType" class="sh-input" required>
-                        <option value="domain">Domaine</option>
-                        <option value="ip">IP</option>
-                        <option value="cidr">CIDR</option>
+                        <option value="domain">@Localizer["Type_Domain"]</option>
+                        <option value="ip">@Localizer["Type_IP"]</option>
+                        <option value="cidr">@Localizer["Type_CIDR"]</option>
                     </select>
                 </div>
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Destination</label>
+                    <label class="sh-form-label">@Localizer["Field_Dest"]</label>
                     <input type="text" name="destination" class="sh-input"
                            placeholder="ex: www.youtube.com ou 172.217.0.0/16" required/>
                 </div>
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Action</label>
+                    <label class="sh-form-label">@Localizer["Field_Action"]</label>
                     <select name="action" class="sh-input" required>
-                        <option value="deny">Bloquer (deny)</option>
-                        <option value="allow">Autoriser (allow)</option>
+                        <option value="deny">@Localizer["Action_Deny"]</option>
+                        <option value="allow">@Localizer["Action_Allow"]</option>
                     </select>
                 </div>
             </div>
             <div class="sh-modal-footer">
                 <button type="button" class="sh-btn-cancel"
-                        onclick="document.getElementById('addModal').classList.remove('show')">Annuler</button>
+                        onclick="document.getElementById('addModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
                 <button type="submit" class="sh-btn-submit">
-                    <i class="bi bi-plus-lg"></i> Ajouter
+                    <i class="bi bi-plus-lg"></i> @Localizer["Btn_Submit_Add"]
                 </button>
             </div>
         </form>
@@ -172,14 +171,14 @@
 <div class="sh-modal-backdrop" id="editModal" onclick="if(event.target===this) this.classList.remove('show')">
     <div class="sh-modal">
         <div class="sh-modal-header">
-            <h3 class="sh-modal-title">Modifier la règle</h3>
+            <h3 class="sh-modal-title">@Localizer["Modal_Edit_Title"]</h3>
             <button class="sh-modal-close" onclick="document.getElementById('editModal').classList.remove('show')">&times;</button>
         </div>
         <form method="post" asp-action="Edit">
             <input type="hidden" name="id" id="editId"/>
             <div class="sh-modal-body">
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Client</label>
+                    <label class="sh-form-label">@Localizer["Field_Client"]</label>
                     <select name="clientId" id="editClientId" class="sh-input" required>
                         @foreach (var client in Model.Clients)
                         {
@@ -188,29 +187,29 @@
                     </select>
                 </div>
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Type</label>
+                    <label class="sh-form-label">@Localizer["Field_Type"]</label>
                     <select name="ruleType" id="editRuleType" class="sh-input" required>
-                        <option value="domain">Domaine</option>
-                        <option value="ip">IP</option>
-                        <option value="cidr">CIDR</option>
+                        <option value="domain">@Localizer["Type_Domain"]</option>
+                        <option value="ip">@Localizer["Type_IP"]</option>
+                        <option value="cidr">@Localizer["Type_CIDR"]</option>
                     </select>
                 </div>
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Destination</label>
+                    <label class="sh-form-label">@Localizer["Field_Dest"]</label>
                     <input type="text" name="destination" id="editDestination" class="sh-input" required/>
                 </div>
                 <div class="sh-form-group">
-                    <label class="sh-form-label">Action</label>
+                    <label class="sh-form-label">@Localizer["Field_Action"]</label>
                     <select name="action" id="editAction" class="sh-input" required>
-                        <option value="deny">Bloquer (deny)</option>
-                        <option value="allow">Autoriser (allow)</option>
+                        <option value="deny">@Localizer["Action_Deny"]</option>
+                        <option value="allow">@Localizer["Action_Allow"]</option>
                     </select>
                 </div>
             </div>
             <div class="sh-modal-footer">
                 <button type="button" class="sh-btn-cancel"
-                        onclick="document.getElementById('editModal').classList.remove('show')">Annuler</button>
-                <button type="submit" class="sh-btn-submit">Enregistrer</button>
+                        onclick="document.getElementById('editModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
+                <button type="submit" class="sh-btn-submit">@Localizer["Btn_Save"]</button>
             </div>
         </form>
     </div>
@@ -226,7 +225,7 @@
             document.getElementById('searchInput').value = searchParam;
             filterTable();
         }
-        
+
         // ── Autocomplete data from server ──
         const autocompleteData = [
             @foreach (var rule in Model.Rules)

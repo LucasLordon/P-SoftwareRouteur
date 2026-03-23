@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+@inject IViewLocalizer Localizer
+<!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="utf-8"/>
@@ -17,10 +18,25 @@
             <span class="sh-brand-text">SafeHome Admin</span>
         </a>
         <div class="sh-header-right">
-            <span class="sh-user">User: @User.Identity?.Name</span>
+            <form asp-controller="Culture" asp-action="Set" method="post" class="sh-form-inline" id="langForm">
+                <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
+                @{
+                    var lang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                    var langItems = new SelectList(new[]
+                    {
+                        new { V = "fr", T = "🇫🇷 FR" },
+                        new { V = "en", T = "🇬🇧 EN" },
+                        new { V = "de", T = "🇩🇪 DE" }
+                    }, "V", "T", lang);
+                }
+                <select name="culture" class="sh-lang-select" asp-items="langItems"
+                        onchange="document.getElementById('langForm').submit()"></select>
+            </form>
+            <span class="sh-user">@Localizer["User_Label"]: @User.Identity?.Name</span>
             <form method="post" asp-controller="Auth" asp-action="Logout" class="sh-form-inline">
                 <button type="submit" class="sh-logout-btn">
-                    <i class="bi bi-box-arrow-right"></i> Logout
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="sh-logout-label">@Localizer["Logout"]</span>
                 </button>
             </form>
         </div>
@@ -28,15 +44,15 @@
     <nav class="sh-tabs">
         <a class="sh-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
            asp-controller="Home" asp-action="Index">
-            <i class="bi bi-house"></i> Dashboard
+            <i class="bi bi-house"></i> @Localizer["Nav_Dashboard"]
         </a>
         <a class="sh-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Client" ? "active" : "")"
            asp-controller="Client" asp-action="Index">
-            <i class="bi bi-people"></i> Edit Users
+            <i class="bi bi-people"></i> @Localizer["Nav_Clients"]
         </a>
         <a class="sh-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "Firewall" ? "active" : "")"
            asp-controller="Firewall" asp-action="Index">
-            <i class="bi bi-shield-lock"></i> Edit Rules
+            <i class="bi bi-shield-lock"></i> @Localizer["Nav_Rules"]
         </a>
     </nav>
 </header>
@@ -60,24 +76,24 @@
 </div>
 
 <footer class="sh-footer">
-    &copy; 2026 SafeHome — Software Router TPI
+    @Localizer["Footer"]
 </footer>
 
 <nav class="sh-bottom-nav">
     <a class="sh-bottom-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "active" : "")"
        asp-controller="Home" asp-action="Index">
         <i class="bi bi-house"></i>
-        <span>Dashboard</span>
+        <span>@Localizer["Nav_Dashboard"]</span>
     </a>
     <a class="sh-bottom-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Client" ? "active" : "")"
        asp-controller="Client" asp-action="Index">
         <i class="bi bi-people"></i>
-        <span>Clients</span>
+        <span>@Localizer["Nav_Clients"]</span>
     </a>
     <a class="sh-bottom-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "Firewall" ? "active" : "")"
        asp-controller="Firewall" asp-action="Index">
         <i class="bi bi-shield-lock"></i>
-        <span>Règles</span>
+        <span>@Localizer["Nav_Rules"]</span>
     </a>
 </nav>
 

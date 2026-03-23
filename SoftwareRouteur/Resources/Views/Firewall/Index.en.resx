@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Page_Title" xml:space="preserve"><value>Rules Management</value></data>
+  <data name="Page_Subtitle" xml:space="preserve"><value>Configure Internet filtering rules</value></data>
+  <data name="Btn_Add" xml:space="preserve"><value>Add a rule</value></data>
+  <data name="Table_Label" xml:space="preserve"><value>Existing rules</value></data>
+  <data name="Filter_Search" xml:space="preserve"><value>Search</value></data>
+  <data name="Filter_Search_Placeholder" xml:space="preserve"><value>Client or destination...</value></data>
+  <data name="Filter_Type" xml:space="preserve"><value>Filter by type</value></data>
+  <data name="Filter_Type_All" xml:space="preserve"><value>All types</value></data>
+  <data name="Filter_Action_Label" xml:space="preserve"><value>Filter by action</value></data>
+  <data name="Filter_Action_All" xml:space="preserve"><value>All actions</value></data>
+  <data name="Col_Client" xml:space="preserve"><value>Client</value></data>
+  <data name="Col_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Col_Dest" xml:space="preserve"><value>Destination</value></data>
+  <data name="Col_Action" xml:space="preserve"><value>Action</value></data>
+  <data name="Col_Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="Empty" xml:space="preserve"><value>No rules configured. Click &quot;Add a rule&quot; to get started.</value></data>
+  <data name="Modal_Add_Title" xml:space="preserve"><value>Add a rule</value></data>
+  <data name="Modal_Edit_Title" xml:space="preserve"><value>Edit rule</value></data>
+  <data name="Field_Client" xml:space="preserve"><value>Client</value></data>
+  <data name="Field_Type" xml:space="preserve"><value>Type</value></data>
+  <data name="Field_Dest" xml:space="preserve"><value>Destination</value></data>
+  <data name="Field_Action" xml:space="preserve"><value>Action</value></data>
+  <data name="Select_Client" xml:space="preserve"><value>Select a client...</value></data>
+  <data name="Type_Domain" xml:space="preserve"><value>Domain</value></data>
+  <data name="Type_IP" xml:space="preserve"><value>IP</value></data>
+  <data name="Type_CIDR" xml:space="preserve"><value>CIDR</value></data>
+  <data name="Action_Deny" xml:space="preserve"><value>Block (deny)</value></data>
+  <data name="Action_Allow" xml:space="preserve"><value>Allow (allow)</value></data>
+  <data name="Btn_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Btn_Submit_Add" xml:space="preserve"><value>Add</value></data>
+  <data name="Btn_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Tooltip_Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Tooltip_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Confirm_Delete" xml:space="preserve"><value>Delete this rule?</value></data>
+</root>

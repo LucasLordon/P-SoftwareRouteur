@@ -1137,8 +1137,25 @@ select.sh-input {
 /* ── Utilitaire inline form ── */
 .sh-form-inline { display: inline; }
 
+/* ── Sélecteur de langue ── */
+.sh-lang-select {
+  padding: 0.3125rem 0.5rem;
+  border: 1px solid var(--sh-gray-200);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--sh-gray-700);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.sh-lang-select:focus {
+  outline: none;
+  border-color: var(--sh-gray-400);
+}
+
 /* ══════════════════════════════════════
-   Login page (standalone, Layout = null)
+   Login page
    ══════════════════════════════════════ */
 
 .login-body {
@@ -1277,7 +1294,7 @@ select.sh-input {
 }
 
 /* ══════════════════════════════════════
-   Layout.cshtml.css — fusionné ici
+   Layout.cshtml.css
    ══════════════════════════════════════ */
 
 a.navbar-brand {
