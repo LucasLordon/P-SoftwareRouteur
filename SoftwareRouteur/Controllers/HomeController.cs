@@ -20,13 +20,17 @@ public class HomeController : Controller
     {
         var clients = _context.Clients.ToList();
 
-        // Dernier statut de chaque IP en une seule requête
+        // Dernier statut de chaque IP
         var clientIps = clients.Select(c => c.IpAddress).ToList();
         var latestStatuses = _context.Monitorings
             .Where(m => clientIps.Contains(m.ClientIp))
+            .Select(m => new { m.ClientIp, m.IsOnline, m.CheckedAt })
+            .AsEnumerable()
             .GroupBy(m => m.ClientIp)
-            .Select(g => new { ClientIp = g.Key, IsOnline = g.OrderByDescending(m => m.CheckedAt).First().IsOnline })
-            .ToDictionary(x => x.ClientIp, x => x.IsOnline);
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(m => m.CheckedAt).First().IsOnline
+            );
 
         var clientStatuses = clients.ToDictionary(
             c => c.Id,
