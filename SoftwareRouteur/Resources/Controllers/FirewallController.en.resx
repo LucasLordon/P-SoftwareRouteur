@@ -2,6 +2,7 @@
 <root>
   <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
   <resheader name="version"><value>2.0</value></resheader>
+  <data name="Error_InvalidClient" xml:space="preserve"><value>The selected client does not exist.</value></data>
   <data name="Success_Created" xml:space="preserve"><value>Rule successfully added.</value></data>
   <data name="Success_Updated" xml:space="preserve"><value>Rule successfully updated.</value></data>
   <data name="Success_Deleted" xml:space="preserve"><value>Rule deleted.</value></data>

@@ -35,6 +35,12 @@ public class FirewallController : Controller
     [HttpPost]
     public IActionResult Create(int clientId, string ruleType, string destination, string action)
     {
+        if (!_context.Clients.Any(c => c.Id == clientId))
+        {
+            TempData["Error"] = _localizer["Error_InvalidClient"].Value;
+            return RedirectToAction("Index");
+        }
+
         var rule = new FirewallRule
         {
             ClientId = clientId,
