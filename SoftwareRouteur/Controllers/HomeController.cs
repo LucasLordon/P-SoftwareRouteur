@@ -20,17 +20,18 @@ public class HomeController : Controller
     {
         var clients = _context.Clients.ToList();
 
-        // Dernier statut de chaque client depuis monitoring
-        var clientStatuses = new Dictionary<int, bool>();
-        foreach (var client in clients)
-        {
-            var latest = _context.Monitorings
-                .Where(m => m.ClientIp == client.IpAddress)
-                .OrderByDescending(m => m.CheckedAt)
-                .FirstOrDefault();
+        // Dernier statut de chaque IP en une seule requête
+        var clientIps = clients.Select(c => c.IpAddress).ToList();
+        var latestStatuses = _context.Monitorings
+            .Where(m => clientIps.Contains(m.ClientIp))
+            .GroupBy(m => m.ClientIp)
+            .Select(g => new { ClientIp = g.Key, IsOnline = g.OrderByDescending(m => m.CheckedAt).First().IsOnline })
+            .ToDictionary(x => x.ClientIp, x => x.IsOnline);
 
-            clientStatuses[client.Id] = latest?.IsOnline ?? false;
-        }
+        var clientStatuses = clients.ToDictionary(
+            c => c.Id,
+            c => latestStatuses.GetValueOrDefault(c.IpAddress, false)
+        );
 
         // Nombre de règles
         var firewallRules = _context.FirewallRules;
