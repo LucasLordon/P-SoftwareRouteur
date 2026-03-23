@@ -28,7 +28,7 @@
             <tr>
                 <th>Hostname</th>
                 <th>Adresse IP</th>
-                <th style="text-align: right;">Actions</th>
+                <th class="sh-col-actions">Actions</th>
             </tr>
             </thead>
             <tbody>
@@ -38,7 +38,7 @@
                     <td class="sh-col-client">@client.Hostname</td>
                     <td class="sh-col-dest">@client.IpAddress</td>
                     <td class="sh-col-actions">
-                        <form method="post" asp-controller="Firewall" asp-action="Index" asp-route-search="@client.Hostname" style="display:inline">
+                        <form method="post" asp-controller="Firewall" asp-action="Index" asp-route-search="@client.Hostname" class="sh-form-inline">
                             <input type="hidden" name="id" value="@client.Id"/>
                             <button type="submit" class="sh-action-btn sh-eye" title="Voir les règles du client">
                                 <i class="bi bi-eye"></i>
@@ -48,7 +48,7 @@
                                 onclick="openEditClientModal(@client.Id, '@client.Hostname', '@client.IpAddress')">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <form method="post" asp-action="Delete" style="display:inline"
+                        <form method="post" asp-action="Delete" class="sh-form-inline"
                               onsubmit="return confirm('Supprimer ce client ? Les règles associées seront également supprimées.')">
                             <input type="hidden" name="id" value="@client.Id"/>
                             <button type="submit" class="sh-action-btn sh-delete" title="Supprimer">

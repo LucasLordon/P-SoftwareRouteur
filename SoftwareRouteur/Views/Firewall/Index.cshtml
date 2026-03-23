@@ -73,7 +73,7 @@
                 <th class="sh-sortable" data-col="3" onclick="sortTable(3)">
                     Action <span class="sh-sort-icon">⇅</span>
                 </th>
-                <th style="text-align: right;">Actions</th>
+                <th class="sh-col-actions">Actions</th>
             </tr>
             </thead>
             <tbody id="rulesTableBody">
@@ -96,7 +96,7 @@
                                 onclick="openEditModal(@rule.Id, @rule.ClientId, '@rule.RuleType', '@rule.Destination', '@rule.Action')">
                             <i class="bi bi-pencil"></i>
                         </button>
-                        <form method="post" asp-action="Delete" style="display:inline"
+                        <form method="post" asp-action="Delete" class="sh-form-inline"
                               onsubmit="return confirm('Supprimer cette règle ?')">
                             <input type="hidden" name="id" value="@rule.Id"/>
                             <button type="submit" class="sh-action-btn sh-delete" title="Supprimer">
