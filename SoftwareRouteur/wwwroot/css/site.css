@@ -1137,6 +1137,55 @@ select.sh-input {
 /* ── Utilitaire inline form ── */
 .sh-form-inline { display: inline; }
 
+/* ── Pagination ── */
+.sh-pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem 1.25rem 0.75rem;
+    border-top: 1px solid var(--sh-gray-200);
+    margin-top: 0.25rem;
+}
+
+.sh-page-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--sh-gray-300);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--sh-gray-700);
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+    line-height: 1.4;
+}
+
+.sh-page-btn:hover:not(:disabled):not(.disabled) {
+    background: var(--sh-blue-600);
+    border-color: var(--sh-blue-600);
+    color: #fff;
+    text-decoration: none;
+}
+
+.sh-page-btn:disabled,
+.sh-page-btn.disabled {
+    opacity: 0.38;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.sh-page-info {
+    font-size: 0.82rem;
+    color: var(--sh-gray-500);
+    padding: 0 0.4rem;
+    white-space: nowrap;
+}
+
 /* ── Sélecteur de langue ── */
 .sh-lang-select {
   padding: 0.3125rem 0.5rem;

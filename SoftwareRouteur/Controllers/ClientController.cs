@@ -20,11 +20,21 @@ public class ClientController : Controller
         _localizer = localizer;
     }
 
-    public IActionResult Index()
+    public IActionResult Index(int page = 1, int pageSize = 10)
     {
+        var totalCount = _context.Clients.Count();
+        var clients = _context.Clients
+            .OrderBy(c => c.Hostname)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToList();
+
         var vm = new ClientIndexViewModel
         {
-            Clients = _context.Clients.ToList()
+            Clients = clients,
+            Page = page,
+            PageSize = pageSize,
+            TotalCount = totalCount
         };
         return View(vm);
     }

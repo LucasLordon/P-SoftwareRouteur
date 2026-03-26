@@ -61,7 +61,7 @@
                 <th>@Localizer["Col_Status"]</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="dashClientsBody">
             @foreach (var client in Model.Clients)
             {
                 var isOnline = Model.ClientStatuses.ContainsKey(client.Id) && Model.ClientStatuses[client.Id];
@@ -85,4 +85,50 @@
             <p>@Localizer["Empty"]</p>
         </div>
     }
+
+    <div class="sh-pagination" id="dashPagination" style="display:none">
+        <button class="sh-page-btn" id="dashBtnPrev" onclick="dashChangePage(-1)">
+            <i class="bi bi-chevron-left"></i>
+        </button>
+        <span class="sh-page-info" id="dashPageInfo"></span>
+        <button class="sh-page-btn" id="dashBtnNext" onclick="dashChangePage(1)">
+            <i class="bi bi-chevron-right"></i>
+        </button>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+        const DASH_PAGE_SIZE = 5;
+        let dashPage = 1;
+
+        function dashRenderPage() {
+            const rows = Array.from(document.querySelectorAll('#dashClientsBody tr'));
+            const total = rows.length;
+            const totalPages = Math.max(1, Math.ceil(total / DASH_PAGE_SIZE));
+            dashPage = Math.min(dashPage, totalPages);
+            const start = (dashPage - 1) * DASH_PAGE_SIZE;
+
+            rows.forEach((row, i) => {
+                row.style.display = (i >= start && i < start + DASH_PAGE_SIZE) ? '' : 'none';
+            });
+
+            const ctrl = document.getElementById('dashPagination');
+            if (totalPages > 1) {
+                ctrl.style.display = '';
+                document.getElementById('dashPageInfo').textContent = `${dashPage} / ${totalPages}`;
+                document.getElementById('dashBtnPrev').disabled = dashPage <= 1;
+                document.getElementById('dashBtnNext').disabled = dashPage >= totalPages;
+            } else {
+                ctrl.style.display = 'none';
+            }
+        }
+
+        function dashChangePage(delta) {
+            dashPage += delta;
+            dashRenderPage();
+        }
+
+        dashRenderPage();
+    </script>
+}

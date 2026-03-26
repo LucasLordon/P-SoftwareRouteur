@@ -21,4 +21,7 @@
   <data name="Btn_Cancel" xml:space="preserve"><value>Annuler</value></data>
   <data name="Btn_Submit_Add" xml:space="preserve"><value>Ajouter</value></data>
   <data name="Btn_Save" xml:space="preserve"><value>Enregistrer</value></data>
+  <data name="Pagination_Previous" xml:space="preserve"><value>Précédent</value></data>
+  <data name="Pagination_Next" xml:space="preserve"><value>Suivant</value></data>
+  <data name="Pagination_Info" xml:space="preserve"><value>Page {0} sur {1}</value></data>
 </root>

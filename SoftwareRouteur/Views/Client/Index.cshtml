@@ -68,6 +68,21 @@
             <p>@Localizer["Empty"]</p>
         </div>
     }
+
+    @if (Model.TotalPages > 1)
+    {
+        <div class="sh-pagination">
+            <a class="sh-page-btn @(!Model.HasPrevious ? "disabled" : "")"
+               asp-action="Index" asp-route-page="@(Model.Page - 1)" asp-route-pageSize="@Model.PageSize">
+                <i class="bi bi-chevron-left"></i>
+            </a>
+            <span class="sh-page-info">@Model.Page / @Model.TotalPages</span>
+            <a class="sh-page-btn @(!Model.HasNext ? "disabled" : "")"
+               asp-action="Index" asp-route-page="@(Model.Page + 1)" asp-route-pageSize="@Model.PageSize">
+                <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+    }
 </div>
 
 <!-- Add Client Modal -->
