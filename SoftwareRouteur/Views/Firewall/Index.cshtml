@@ -115,7 +115,7 @@
         </div>
     }
 
-    <div class="sh-pagination" id="paginationControls" style="display:none">
+    <div class="sh-pagination" id="paginationControls">
         <button class="sh-page-btn" id="btnPrev" onclick="changePage(-1)">
             <i class="bi bi-chevron-left"></i>
         </button>
@@ -123,6 +123,12 @@
         <button class="sh-page-btn" id="btnNext" onclick="changePage(1)">
             <i class="bi bi-chevron-right"></i>
         </button>
+        <select class="sh-page-size-select" id="pageSizeSelect" onchange="changePageSize(this.value)">
+            <option value="5">5 / page</option>
+            <option value="10" selected>10 / page</option>
+            <option value="25">25 / page</option>
+            <option value="50">50 / page</option>
+        </select>
     </div>
 </div>
 
@@ -302,7 +308,7 @@
         });
 
         // ── Pagination ──
-        const PAGE_SIZE = 10;
+        let PAGE_SIZE = 10;
         let currentPage = 1;
 
         function renderPage() {
@@ -316,20 +322,21 @@
             matched.slice(start, start + PAGE_SIZE).forEach(row => { row.style.display = ''; });
 
             document.getElementById('visibleCount').textContent = matched.length;
-
-            const controls = document.getElementById('paginationControls');
-            if (totalPages > 1) {
-                controls.style.display = '';
-                document.getElementById('pageInfo').textContent = `${currentPage} / ${totalPages}`;
-                document.getElementById('btnPrev').disabled = currentPage <= 1;
-                document.getElementById('btnNext').disabled = currentPage >= totalPages;
-            } else {
-                controls.style.display = 'none';
-            }
+            document.getElementById('pageInfo').textContent = totalPages > 1 ? `${currentPage} / ${totalPages}` : '';
+            document.getElementById('btnPrev').disabled = currentPage <= 1;
+            document.getElementById('btnNext').disabled = currentPage >= totalPages;
+            document.getElementById('btnPrev').style.display = totalPages > 1 ? '' : 'none';
+            document.getElementById('btnNext').style.display = totalPages > 1 ? '' : 'none';
         }
 
         function changePage(delta) {
             currentPage += delta;
+            renderPage();
+        }
+
+        function changePageSize(val) {
+            PAGE_SIZE = parseInt(val);
+            currentPage = 1;
             renderPage();
         }
 

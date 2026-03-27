@@ -69,9 +69,9 @@
         </div>
     }
 
-    @if (Model.TotalPages > 1)
-    {
-        <div class="sh-pagination">
+    <div class="sh-pagination">
+        @if (Model.TotalPages > 1)
+        {
             <a class="sh-page-btn @(!Model.HasPrevious ? "disabled" : "")"
                asp-action="Index" asp-route-page="@(Model.Page - 1)" asp-route-pageSize="@Model.PageSize">
                 <i class="bi bi-chevron-left"></i>
@@ -81,8 +81,14 @@
                asp-action="Index" asp-route-page="@(Model.Page + 1)" asp-route-pageSize="@Model.PageSize">
                 <i class="bi bi-chevron-right"></i>
             </a>
-        </div>
-    }
+        }
+        <select class="sh-page-size-select" id="clientPageSizeSelect" onchange="window.location.href='?page=1&pageSize=' + this.value">
+            <option value="5">5 / page</option>
+            <option value="10">10 / page</option>
+            <option value="25">25 / page</option>
+            <option value="50">50 / page</option>
+        </select>
+    </div>
 </div>
 
 <!-- Add Client Modal -->
@@ -150,6 +156,8 @@
 
 @section Scripts {
     <script>
+        document.getElementById('clientPageSizeSelect').value = '@Model.PageSize';
+
         function openEditClientModal(id, hostname, ipAddress) {
             document.getElementById('editClientId').value = id;
             document.getElementById('editClientHostname').value = hostname;
