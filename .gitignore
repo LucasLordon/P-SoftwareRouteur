@@ -69,7 +69,6 @@ Generated\ Files/
 # Rider / JetBrains
 *.sln.iml
 .idea/
-.publish/
 
 # Ionide
 .ionide/
@@ -137,6 +136,8 @@ ecf/
 rcf/
 ASALocalRun/
 
+# Publish outputs
+**/publish/
 
 ##################################################
 ## DATABASE
