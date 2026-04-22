@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using SoftwareRouteur.Data;
 using SoftwareRouteur.Models;
+using SoftwareRouteur.Services;
 using SoftwareRouteur.ViewModels;
 
 namespace SoftwareRouteur.Controllers;
@@ -13,11 +14,13 @@ public class ClientController : Controller
 {
     private readonly AppDbContext _context;
     private readonly IStringLocalizer<ClientController> _localizer;
+    private readonly OPNsenseService _opnsense;
 
-    public ClientController(AppDbContext context, IStringLocalizer<ClientController> localizer)
+    public ClientController(AppDbContext context, IStringLocalizer<ClientController> localizer, OPNsenseService opnsense)
     {
         _context = context;
         _localizer = localizer;
+        _opnsense = opnsense;
     }
 
     public IActionResult Index(int page = 1, int pageSize = 10)
@@ -40,7 +43,7 @@ public class ClientController : Controller
     }
 
     [HttpPost]
-    public IActionResult Create(string hostname, string ipAddress)
+    public async Task<IActionResult> Create(string hostname, string ipAddress)
     {
         if (string.IsNullOrWhiteSpace(hostname) || string.IsNullOrWhiteSpace(ipAddress))
         {
@@ -61,13 +64,27 @@ public class ClientController : Controller
             CreatedAt = DateTime.Now
         };
         _context.Clients.Add(client);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
+        
+        var aliasUuid = await _opnsense.CreateAliasAsync(
+            client.Id,
+            $"Blocklist pour {client.Hostname}");
+        client.OpnsenseAliasUuid = aliasUuid;
+        
+        var ruleUuid = await _opnsense.CreateBlockRuleAsync(
+            client.Id,
+            client.IpAddress,
+            $"Block {client.Hostname}");
+        client.OpnsenseRuleUuid = ruleUuid;
+
+        await _context.SaveChangesAsync();
+
         TempData["Success"] = string.Format(_localizer["Success_Created"].Value, hostname);
         return RedirectToAction("Index");
     }
 
     [HttpPost]
-    public IActionResult Edit(int id, string hostname, string ipAddress)
+    public async Task<IActionResult> Edit(int id, string hostname, string ipAddress)
     {
         if (string.IsNullOrWhiteSpace(hostname) || string.IsNullOrWhiteSpace(ipAddress))
         {
@@ -86,20 +103,25 @@ public class ClientController : Controller
         {
             client.Hostname = hostname;
             client.IpAddress = ipAddress;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             TempData["Success"] = string.Format(_localizer["Success_Updated"].Value, hostname);
         }
         return RedirectToAction("Index");
     }
 
     [HttpPost]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         var client = _context.Clients.Find(id);
         if (client != null)
         {
+            if (client.OpnsenseRuleUuid != null)
+                await _opnsense.DeleteFirewallRuleAsync(client.OpnsenseRuleUuid);
+            
+            await _opnsense.DeleteAliasAsync(client.Id);
+
             _context.Clients.Remove(client);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
             TempData["Success"] = string.Format(_localizer["Success_Deleted"].Value, client.Hostname);
         }
         return RedirectToAction("Index");

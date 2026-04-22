@@ -18,4 +18,10 @@ public class FirewallRule
     [Column("client_id")]
     public int ClientId { get; set; }
     public Client? Client { get; set; }
+    
+    [Column("opnsense_alias_uuid")]
+    public string? OpnsenseAliasUuid { get; set; }
+
+    [Column("opnsense_rule_uuid")]
+    public string? OpnsenseRuleUuid { get; set; }
 }

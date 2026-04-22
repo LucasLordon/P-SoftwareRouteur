@@ -17,4 +17,10 @@ public class Client
     public DateTime CreatedAt { get; set; }
 
     public List<FirewallRule> FirewallRules { get; set; } = new();
+    
+    [Column("opnsense_alias_uuid")]
+    public string? OpnsenseAliasUuid { get; set; }
+
+    [Column("opnsense_rule_uuid")]
+    public string? OpnsenseRuleUuid { get; set; }
 }
