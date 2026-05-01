@@ -104,6 +104,7 @@ public class AuthController : Controller
     public async Task<IActionResult> Logout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        return RedirectToAction("Login");
+        await HttpContext.SignOutAsync("ProfileCookie");
+        return RedirectToAction("Index", "Profiles");
     }
 }

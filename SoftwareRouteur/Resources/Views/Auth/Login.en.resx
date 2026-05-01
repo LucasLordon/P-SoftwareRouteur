@@ -9,4 +9,5 @@
   <data name="Field_Password" xml:space="preserve"><value>Password</value></data>
   <data name="Placeholder_Username" xml:space="preserve"><value>admin</value></data>
   <data name="Btn_Submit" xml:space="preserve"><value>Sign in</value></data>
+  <data name="Link_BackToProfiles" xml:space="preserve"><value>Back to profile selection</value></data>
 </root>
