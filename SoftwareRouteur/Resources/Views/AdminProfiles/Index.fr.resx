@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Page_Title" xml:space="preserve"><value>Gestion des profils</value></data>
+  <data name="Page_Subtitle" xml:space="preserve"><value>Gérer les profils familiaux</value></data>
+  <data name="Btn_Add" xml:space="preserve"><value>Ajouter un profil</value></data>
+  <data name="Table_Title" xml:space="preserve"><value>Profils existants ({0})</value></data>
+  <data name="Col_Name" xml:space="preserve"><value>Nom</value></data>
+  <data name="Col_Role" xml:space="preserve"><value>Rôle</value></data>
+  <data name="Col_Pin" xml:space="preserve"><value>PIN</value></data>
+  <data name="Col_Devices" xml:space="preserve"><value>Appareils</value></data>
+  <data name="Col_Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="Badge_Parent" xml:space="preserve"><value>Parent</value></data>
+  <data name="Badge_Child" xml:space="preserve"><value>Enfant</value></data>
+  <data name="Pin_Active" xml:space="preserve"><value>Activé</value></data>
+  <data name="Pin_Inactive" xml:space="preserve"><value>Désactivé</value></data>
+  <data name="Tooltip_Edit" xml:space="preserve"><value>Modifier</value></data>
+  <data name="Tooltip_Delete" xml:space="preserve"><value>Supprimer</value></data>
+  <data name="Confirm_Delete" xml:space="preserve"><value>Supprimer ce profil ? Les appareils associés seront détachés.</value></data>
+  <data name="Empty" xml:space="preserve"><value>Aucun profil créé. Cliquez sur « Ajouter un profil » pour commencer.</value></data>
+  <data name="Modal_Add_Title" xml:space="preserve"><value>Nouveau profil</value></data>
+  <data name="Field_Name" xml:space="preserve"><value>Nom</value></data>
+  <data name="Field_Role" xml:space="preserve"><value>Rôle</value></data>
+  <data name="Field_Pin" xml:space="preserve"><value>Code PIN</value></data>
+  <data name="Field_ConfirmPin" xml:space="preserve"><value>Confirmer le PIN</value></data>
+  <data name="Placeholder_Name" xml:space="preserve"><value>Ex. : Maman, Papa, Léa…</value></data>
+  <data name="Placeholder_Pin" xml:space="preserve"><value>4 chiffres</value></data>
+  <data name="Hint_Pin" xml:space="preserve"><value>Obligatoire pour le rôle Parent. Optionnel pour Enfant.</value></data>
+  <data name="Select_Role" xml:space="preserve"><value>Choisir un rôle</value></data>
+  <data name="Role_Parent" xml:space="preserve"><value>Parent</value></data>
+  <data name="Role_Child" xml:space="preserve"><value>Enfant</value></data>
+  <data name="Btn_Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Btn_Submit" xml:space="preserve"><value>Créer</value></data>
+  <data name="Modal_Edit_Title" xml:space="preserve"><value>Modifier le profil</value></data>
+  <data name="Hint_Pin_Keep" xml:space="preserve"><value>Laisser vide pour conserver le PIN actuel.</value></data>
+  <data name="Btn_Save" xml:space="preserve"><value>Enregistrer</value></data>
+</root>

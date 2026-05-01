@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Error_FieldsRequired" xml:space="preserve"><value>Le nom et le rôle sont obligatoires.</value></data>
+  <data name="Error_ParentPinRequired" xml:space="preserve"><value>Le code PIN est obligatoire pour le rôle Parent.</value></data>
+  <data name="Error_PinFormat" xml:space="preserve"><value>Le code PIN doit contenir exactement 4 chiffres.</value></data>
+  <data name="Error_PinMismatch" xml:space="preserve"><value>Les codes PIN ne correspondent pas.</value></data>
+  <data name="Success_Created" xml:space="preserve"><value>Profil « {0} » créé avec succès.</value></data>
+  <data name="Success_Updated" xml:space="preserve"><value>Profil « {0} » modifié avec succès.</value></data>
+  <data name="Success_Deleted" xml:space="preserve"><value>Profil « {0} » supprimé.</value></data>
+</root>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Page_Title" xml:space="preserve"><value>Profile Management</value></data>
+  <data name="Page_Subtitle" xml:space="preserve"><value>Manage family profiles</value></data>
+  <data name="Btn_Add" xml:space="preserve"><value>Add a profile</value></data>
+  <data name="Table_Title" xml:space="preserve"><value>Existing profiles ({0})</value></data>
+  <data name="Col_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Col_Role" xml:space="preserve"><value>Role</value></data>
+  <data name="Col_Pin" xml:space="preserve"><value>PIN</value></data>
+  <data name="Col_Devices" xml:space="preserve"><value>Devices</value></data>
+  <data name="Col_Actions" xml:space="preserve"><value>Actions</value></data>
+  <data name="Badge_Parent" xml:space="preserve"><value>Parent</value></data>
+  <data name="Badge_Child" xml:space="preserve"><value>Child</value></data>
+  <data name="Pin_Active" xml:space="preserve"><value>Enabled</value></data>
+  <data name="Pin_Inactive" xml:space="preserve"><value>Disabled</value></data>
+  <data name="Tooltip_Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Tooltip_Delete" xml:space="preserve"><value>Delete</value></data>
+  <data name="Confirm_Delete" xml:space="preserve"><value>Delete this profile? Associated devices will be detached.</value></data>
+  <data name="Empty" xml:space="preserve"><value>No profiles created. Click "Add a profile" to get started.</value></data>
+  <data name="Modal_Add_Title" xml:space="preserve"><value>New profile</value></data>
+  <data name="Field_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Field_Role" xml:space="preserve"><value>Role</value></data>
+  <data name="Field_Pin" xml:space="preserve"><value>PIN code</value></data>
+  <data name="Field_ConfirmPin" xml:space="preserve"><value>Confirm PIN</value></data>
+  <data name="Placeholder_Name" xml:space="preserve"><value>e.g. Mum, Dad, Lea…</value></data>
+  <data name="Placeholder_Pin" xml:space="preserve"><value>4 digits</value></data>
+  <data name="Hint_Pin" xml:space="preserve"><value>Required for Parent role. Optional for Child.</value></data>
+  <data name="Select_Role" xml:space="preserve"><value>Choose a role</value></data>
+  <data name="Role_Parent" xml:space="preserve"><value>Parent</value></data>
+  <data name="Role_Child" xml:space="preserve"><value>Child</value></data>
+  <data name="Btn_Cancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="Btn_Submit" xml:space="preserve"><value>Create</value></data>
+  <data name="Modal_Edit_Title" xml:space="preserve"><value>Edit profile</value></data>
+  <data name="Hint_Pin_Keep" xml:space="preserve"><value>Leave blank to keep the current PIN.</value></data>
+  <data name="Btn_Save" xml:space="preserve"><value>Save</value></data>
+</root>

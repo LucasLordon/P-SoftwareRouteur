@@ -1,0 +1,204 @@
+@model List<SoftwareRouteur.Models.Profile>
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Page_Title"].Value;
+    var clientCounts = (ViewBag.ClientCounts as Dictionary<int, int>) ?? new Dictionary<int, int>();
+}
+
+<div class="sh-page-header">
+    <div>
+        <h1 class="sh-page-title">@Localizer["Page_Title"]</h1>
+        <p class="sh-page-subtitle">@Localizer["Page_Subtitle"]</p>
+    </div>
+    <button class="sh-btn-primary" onclick="document.getElementById('addProfileModal').classList.add('show')">
+        <i class="bi bi-plus-lg"></i> @Localizer["Btn_Add"]
+    </button>
+</div>
+
+<div class="sh-card">
+    <div class="sh-card-header">
+        <h2 class="sh-card-title">@string.Format(Localizer["Table_Title"].Value, Model.Count)</h2>
+    </div>
+
+    @if (Model.Any())
+    {
+        <table class="sh-table">
+            <thead>
+            <tr>
+                <th>@Localizer["Col_Name"]</th>
+                <th>@Localizer["Col_Role"]</th>
+                <th>@Localizer["Col_Pin"]</th>
+                <th>@Localizer["Col_Devices"]</th>
+                <th class="sh-col-actions">@Localizer["Col_Actions"]</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var profile in Model)
+            {
+                var badgeClass = profile.Role == "parent" ? "sh-badge sh-badge-parent" : "sh-badge sh-badge-child";
+                var badgeLabel = profile.Role == "parent" ? Localizer["Badge_Parent"].Value : Localizer["Badge_Child"].Value;
+                var deviceCount = clientCounts.TryGetValue(profile.Id, out var cnt) ? cnt : 0;
+                <tr>
+                    <td>@profile.DisplayName</td>
+                    <td><span class="@badgeClass">@badgeLabel</span></td>
+                    <td>
+                        @if (profile.PinHash != null)
+                        {
+                            <span class="sh-badge sh-badge-allow">@Localizer["Pin_Active"]</span>
+                        }
+                        else
+                        {
+                            <span class="sh-badge sh-badge-offline">@Localizer["Pin_Inactive"]</span>
+                        }
+                    </td>
+                    <td>@deviceCount</td>
+                    <td class="sh-col-actions">
+                        <button type="button" class="sh-action-btn"
+                                data-profile-id="@profile.Id"
+                                data-profile-name="@profile.DisplayName"
+                                data-profile-role="@profile.Role"
+                                onclick="openEditModal(this)"
+                                title="@Localizer["Tooltip_Edit"]">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <form method="post" action="/admin/profiles/delete/@profile.Id" class="sh-form-inline"
+                              onsubmit="return confirm('@Localizer["Confirm_Delete"]')">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="sh-action-btn sh-delete" title="@Localizer["Tooltip_Delete"]">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="sh-empty">
+            <i class="bi bi-person-lines-fill"></i>
+            <p>@Localizer["Empty"]</p>
+        </div>
+    }
+</div>
+
+<!-- Add Profile Modal -->
+<div class="sh-modal-backdrop" id="addProfileModal" onclick="if(event.target===this) this.classList.remove('show')">
+    <div class="sh-modal">
+        <div class="sh-modal-header">
+            <h3 class="sh-modal-title">@Localizer["Modal_Add_Title"]</h3>
+            <button class="sh-modal-close" onclick="document.getElementById('addProfileModal').classList.remove('show')">&times;</button>
+        </div>
+        <form method="post" action="/admin/profiles/create">
+            @Html.AntiForgeryToken()
+            <div class="sh-modal-body">
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Name"]</label>
+                    <input type="text" name="DisplayName" class="sh-input"
+                           placeholder="@Localizer["Placeholder_Name"]" required maxlength="100"/>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Role"]</label>
+                    <select name="Role" class="sh-input" required id="addRoleSelect" onchange="updateAddPinRequired()">
+                        <option value="" disabled selected>@Localizer["Select_Role"]</option>
+                        <option value="parent">@Localizer["Role_Parent"]</option>
+                        <option value="child">@Localizer["Role_Child"]</option>
+                    </select>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Pin"]</label>
+                    <input type="text" name="Pin" id="addPinInput" class="sh-input"
+                           placeholder="@Localizer["Placeholder_Pin"]"
+                           maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="new-password"/>
+                    <small class="sh-field-hint">@Localizer["Hint_Pin"]</small>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_ConfirmPin"]</label>
+                    <input type="text" name="ConfirmPin" class="sh-input"
+                           placeholder="@Localizer["Placeholder_Pin"]"
+                           maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="new-password"/>
+                </div>
+            </div>
+            <div class="sh-modal-footer">
+                <button type="button" class="sh-btn-cancel"
+                        onclick="document.getElementById('addProfileModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
+                <button type="submit" class="sh-btn-submit">
+                    <i class="bi bi-plus-lg"></i> @Localizer["Btn_Submit"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="sh-modal-backdrop" id="editProfileModal" onclick="if(event.target===this) this.classList.remove('show')">
+    <div class="sh-modal">
+        <div class="sh-modal-header">
+            <h3 class="sh-modal-title">@Localizer["Modal_Edit_Title"]</h3>
+            <button class="sh-modal-close" onclick="document.getElementById('editProfileModal').classList.remove('show')">&times;</button>
+        </div>
+        <form method="post" id="editProfileForm" action="">
+            @Html.AntiForgeryToken()
+            <div class="sh-modal-body">
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Name"]</label>
+                    <input type="text" name="DisplayName" id="editDisplayName" class="sh-input"
+                           placeholder="@Localizer["Placeholder_Name"]" required maxlength="100"/>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Role"]</label>
+                    <select name="Role" class="sh-input" required id="editRoleSelect">
+                        <option value="" disabled>@Localizer["Select_Role"]</option>
+                        <option value="parent">@Localizer["Role_Parent"]</option>
+                        <option value="child">@Localizer["Role_Child"]</option>
+                    </select>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Pin"]</label>
+                    <input type="text" name="Pin" id="editPinInput" class="sh-input"
+                           placeholder="@Localizer["Placeholder_Pin"]"
+                           maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="new-password"/>
+                    <small class="sh-field-hint">@Localizer["Hint_Pin_Keep"]</small>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_ConfirmPin"]</label>
+                    <input type="text" name="ConfirmPin" id="editConfirmPin" class="sh-input"
+                           placeholder="@Localizer["Placeholder_Pin"]"
+                           maxlength="4" inputmode="numeric" pattern="[0-9]{4}" autocomplete="new-password"/>
+                </div>
+            </div>
+            <div class="sh-modal-footer">
+                <button type="button" class="sh-btn-cancel"
+                        onclick="document.getElementById('editProfileModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
+                <button type="submit" class="sh-btn-submit">
+                    <i class="bi bi-check-lg"></i> @Localizer["Btn_Save"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function updateAddPinRequired() {
+            var role = document.getElementById('addRoleSelect').value;
+            document.getElementById('addPinInput').required = (role === 'parent');
+        }
+
+        function openEditModal(btn) {
+            var id = btn.dataset.profileId;
+            var name = btn.dataset.profileName;
+            var role = btn.dataset.profileRole;
+
+            document.getElementById('editProfileForm').action = '/admin/profiles/edit/' + id;
+            document.getElementById('editDisplayName').value = name;
+            var sel = document.getElementById('editRoleSelect');
+            for (var i = 0; i < sel.options.length; i++)
+                sel.options[i].selected = (sel.options[i].value === role);
+            document.getElementById('editPinInput').value = '';
+            document.getElementById('editConfirmPin').value = '';
+            document.getElementById('editProfileModal').classList.add('show');
+        }
+    </script>
+}
