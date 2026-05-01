@@ -41,6 +41,10 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/Auth/Login";
         options.LogoutPath = "/Auth/Logout";
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
+    })
+    .AddCookie("ProfileCookie", options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromHours(8);
     });
 
 var app = builder.Build();
@@ -68,6 +72,6 @@ app.UseStaticFiles();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Profiles}/{action=Index}/{id?}");
 
 app.Run();

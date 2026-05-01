@@ -1,0 +1,86 @@
+@model List<SoftwareRouteur.Models.Profile>
+@inject IViewLocalizer Localizer
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@Localizer["Page_Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+</head>
+<body class="sh-profiles-body">
+
+<header class="sh-header">
+    <div class="sh-header-top">
+        <a class="sh-brand" asp-controller="Profiles" asp-action="Index">
+            <span class="sh-brand-icon"><i class="bi bi-shield-check"></i></span>
+            <span class="sh-brand-text">SafeHome</span>
+        </a>
+        <div class="sh-header-right">
+            <form asp-controller="Culture" asp-action="Set" method="post" class="sh-form-inline" id="profilesLangForm">
+                <input type="hidden" name="returnUrl" value="/Profiles/Index"/>
+                @{
+                    var lang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                    var langItems = new SelectList(new[]
+                    {
+                        new { V = "fr", T = "🇫🇷 FR" },
+                        new { V = "en", T = "🇬🇧 EN" },
+                        new { V = "de", T = "🇩🇪 DE" }
+                    }, "V", "T", lang);
+                }
+                <select name="culture" class="sh-lang-select" asp-items="langItems"
+                        onchange="document.getElementById('profilesLangForm').submit()"></select>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="sh-profiles-main">
+    <div class="login-brand">
+        <div class="login-brand-icon">
+            <i class="bi bi-shield-check"></i>
+        </div>
+        <h1 class="login-brand-title">SafeHome</h1>
+        <p class="login-brand-subtitle">@Localizer["Who_Are_You"]</p>
+    </div>
+
+    <div class="sh-profile-grid">
+        @foreach (var profile in Model)
+        {
+            var words = profile.DisplayName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            var initials = words.Length >= 2
+                ? $"{char.ToUpper(words[0][0])}{char.ToUpper(words[1][0])}"
+                : char.ToUpper(words[0][0]).ToString();
+            var badgeClass = profile.Role == "parent"
+                ? "sh-badge sh-badge-parent"
+                : "sh-badge sh-badge-child";
+            var badgeLabel = profile.Role == "parent"
+                ? Localizer["Badge_Parent"].Value
+                : Localizer["Badge_Child"].Value;
+
+            <a class="sh-profile-card" asp-controller="Profiles" asp-action="Pin" asp-route-id="@profile.Id">
+                <div class="sh-profile-avatar">
+                    <span class="sh-profile-initials">@initials</span>
+                </div>
+                <div class="sh-profile-name">@profile.DisplayName</div>
+                <span class="@badgeClass">@badgeLabel</span>
+            </a>
+        }
+    </div>
+
+    <div class="login-footer" style="margin-top: 1.5rem;">
+        <a class="sh-admin-link" asp-controller="Auth" asp-action="Login">@Localizer["Admin_Access"]</a>
+    </div>
+</main>
+
+<footer class="login-footer">
+    @Localizer["Footer"]
+</footer>
+
+</body>
+</html>

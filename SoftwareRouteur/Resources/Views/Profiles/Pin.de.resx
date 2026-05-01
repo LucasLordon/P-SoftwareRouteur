@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Page_Title" xml:space="preserve"><value>SafeHome — PIN-Code</value></data>
+  <data name="Badge_Parent" xml:space="preserve"><value>Elternteil</value></data>
+  <data name="Badge_Child" xml:space="preserve"><value>Kind</value></data>
+  <data name="Enter_Pin" xml:space="preserve"><value>Geben Sie Ihren PIN-Code ein</value></data>
+  <data name="Back_To_Profiles" xml:space="preserve"><value>← Anderes Profil wählen</value></data>
+  <data name="Admin_Access" xml:space="preserve"><value>Administratorzugang</value></data>
+  <data name="Footer" xml:space="preserve"><value>© 2026 SafeHome — Software Router TPI</value></data>
+</root>

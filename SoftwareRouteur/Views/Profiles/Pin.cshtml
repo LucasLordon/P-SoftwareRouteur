@@ -1,0 +1,133 @@
+@model SoftwareRouteur.ViewModels.PinViewModel
+@inject IViewLocalizer Localizer
+@{
+    Layout = null;
+    var profile = Model.Profile;
+    var words = profile.DisplayName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var initials = words.Length >= 2
+        ? $"{char.ToUpper(words[0][0])}{char.ToUpper(words[1][0])}"
+        : char.ToUpper(words[0][0]).ToString();
+    var badgeClass = profile.Role == "parent"
+        ? "sh-badge sh-badge-parent"
+        : "sh-badge sh-badge-child";
+    var badgeLabel = profile.Role == "parent"
+        ? Localizer["Badge_Parent"].Value
+        : Localizer["Badge_Child"].Value;
+}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@Localizer["Page_Title"]</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+</head>
+<body class="sh-profiles-body">
+
+<header class="sh-header">
+    <div class="sh-header-top">
+        <a class="sh-brand" asp-controller="Profiles" asp-action="Index">
+            <span class="sh-brand-icon"><i class="bi bi-shield-check"></i></span>
+            <span class="sh-brand-text">SafeHome</span>
+        </a>
+        <div class="sh-header-right">
+            <form asp-controller="Culture" asp-action="Set" method="post" class="sh-form-inline" id="pinLangForm">
+                <input type="hidden" name="returnUrl" value="/Profiles/Pin/@profile.Id"/>
+                @{
+                    var lang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                    var langItems = new SelectList(new[]
+                    {
+                        new { V = "fr", T = "🇫🇷 FR" },
+                        new { V = "en", T = "🇬🇧 EN" },
+                        new { V = "de", T = "🇩🇪 DE" }
+                    }, "V", "T", lang);
+                }
+                <select name="culture" class="sh-lang-select" asp-items="langItems"
+                        onchange="document.getElementById('pinLangForm').submit()"></select>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main class="sh-profiles-main">
+    <div class="login-card sh-pin-card">
+
+        <div class="sh-pin-card-header">
+            <div class="sh-profile-avatar">
+                <span class="sh-profile-initials">@initials</span>
+            </div>
+            <div class="sh-profile-name">@profile.DisplayName</div>
+            <span class="@badgeClass">@badgeLabel</span>
+        </div>
+
+        <p class="sh-pin-subtitle">@Localizer["Enter_Pin"]</p>
+
+        @if (Model.Error != null)
+        {
+            <div class="login-error">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+                @Model.Error
+            </div>
+        }
+
+        <form method="post" asp-action="Pin" asp-route-id="@profile.Id">
+            <div class="sh-pin-inputs" id="pinInputs">
+                <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off" id="pin1"/>
+                <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off" id="pin2"/>
+                <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off" id="pin3"/>
+                <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off" id="pin4"/>
+            </div>
+            <input type="hidden" name="pin" id="pinCombined"/>
+        </form>
+
+        <div class="sh-pin-back">
+            <a class="sh-admin-link" asp-controller="Profiles" asp-action="Index">
+                @Localizer["Back_To_Profiles"]
+            </a>
+        </div>
+    </div>
+
+    <div class="login-footer" style="margin-top: 1.5rem;">
+        <a class="sh-admin-link" asp-controller="Auth" asp-action="Login">@Localizer["Admin_Access"]</a>
+    </div>
+</main>
+
+<footer class="login-footer">
+    @Localizer["Footer"]
+</footer>
+
+<script>
+(function () {
+    const boxes = Array.from(document.querySelectorAll('.sh-pin-box'));
+    const combined = document.getElementById('pinCombined');
+    const form = combined.closest('form');
+
+    boxes.forEach(function (box, i) {
+        box.addEventListener('input', function () {
+            box.value = box.value.replace(/\D/g, '').slice(0, 1);
+            if (box.value) {
+                if (i < boxes.length - 1) {
+                    boxes[i + 1].focus();
+                } else {
+                    combined.value = boxes.map(function (b) { return b.value; }).join('');
+                    form.submit();
+                }
+            }
+        });
+
+        box.addEventListener('keydown', function (e) {
+            if (e.key === 'Backspace' && !box.value && i > 0) {
+                boxes[i - 1].value = '';
+                boxes[i - 1].focus();
+            }
+        });
+    });
+
+    boxes[0].focus();
+}());
+</script>
+
+</body>
+</html>

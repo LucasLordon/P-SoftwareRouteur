@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Error_InvalidPin" xml:space="preserve"><value>Incorrect PIN code.</value></data>
+  <data name="Error_TooManyAttempts" xml:space="preserve"><value>Too many failed attempts. Please try again in 15 minutes.</value></data>
+</root>
