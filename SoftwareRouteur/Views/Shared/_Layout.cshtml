@@ -54,6 +54,10 @@
            asp-controller="Firewall" asp-action="Index">
             <i class="bi bi-shield-lock"></i> @Localizer["Nav_Rules"]
         </a>
+        <a class="sh-tab @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminProfiles" ? "active" : "")"
+           asp-controller="AdminProfiles" asp-action="Index">
+            <i class="bi bi-person-badge"></i>@Localizer["Nav_Profiles"]
+        </a>
     </nav>
 </header>
 
@@ -94,6 +98,11 @@
        asp-controller="Firewall" asp-action="Index">
         <i class="bi bi-shield-lock"></i>
         <span>@Localizer["Nav_Rules"]</span>
+    </a>
+    <a class="sh-bottom-nav-item @(ViewContext.RouteData.Values["controller"]?.ToString() == "AdminProfiles" ? "active" : "")"
+       asp-controller="AdminProfiles" asp-action="Index">
+        <i class="bi bi-person-badge"></i>
+        <span>@Localizer["Nav_Profiles"]</span>
     </a>
 </nav>
 

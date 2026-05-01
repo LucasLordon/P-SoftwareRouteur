@@ -7,5 +7,6 @@
   <data name="Nav_Rules" xml:space="preserve"><value>Règles</value></data>
   <data name="User_Label" xml:space="preserve"><value>Utilisateur</value></data>
   <data name="Logout" xml:space="preserve"><value>Déconnexion</value></data>
+  <data name="Nav_Profiles" xml:space="preserve"><value>Profils</value></data>
   <data name="Footer" xml:space="preserve"><value>© 2026 SafeHome — Software Router TPI</value></data>
 </root>
