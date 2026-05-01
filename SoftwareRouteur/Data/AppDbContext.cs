@@ -15,5 +15,24 @@ public class AppDbContext : DbContext
     public DbSet<AdminUser> AdminUsers { get; set; }
     public DbSet<Monitoring> Monitorings { get; set; }
     public DbSet<BlockedTraffic> BlockedTraffics { get; set; }
+    public DbSet<Profile> Profiles { get; set; }
 
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<Profile>()
+            .HasOne(p => p.CreatedBy)
+            .WithMany()
+            .HasForeignKey(p => p.CreatedById)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        modelBuilder.Entity<Client>()
+            .HasOne(c => c.Profile)
+            .WithMany(p => p.Clients)
+            .HasForeignKey(c => c.ProfileId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+    }
 }

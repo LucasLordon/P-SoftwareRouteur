@@ -23,4 +23,9 @@ public class Client
 
     [Column("opnsense_rule_uuid")]
     public string? OpnsenseRuleUuid { get; set; }
+
+    [Column("profile_id")]
+    public int? ProfileId { get; set; }
+
+    public Profile? Profile { get; set; }
 }
