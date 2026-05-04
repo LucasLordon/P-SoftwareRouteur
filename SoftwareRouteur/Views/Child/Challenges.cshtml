@@ -1,0 +1,18 @@
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Page_Title"].Value;
+    Layout = "_LayoutChild";
+}
+
+<div class="sh-page-header">
+    <div>
+        <h1 class="sh-page-title">@Localizer["Page_Title"]</h1>
+    </div>
+</div>
+
+<div class="sh-card">
+    <div class="sh-empty">
+        <i class="bi bi-hourglass"></i>
+        <p>@Localizer["Coming_Soon"]</p>
+    </div>
+</div>

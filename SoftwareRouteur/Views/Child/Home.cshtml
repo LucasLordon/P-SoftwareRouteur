@@ -1,0 +1,59 @@
+@model ChildHomeViewModel
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Page_Title"].Value;
+    Layout = "_LayoutChild";
+}
+
+<div class="sh-page-header">
+    <div>
+        <h1 class="sh-page-title">@Localizer["Welcome"], @Model.CurrentProfile.DisplayName</h1>
+    </div>
+</div>
+
+<div class="sh-card" style="margin-bottom: 2rem;">
+    <div class="sh-card-header">
+        <h2 class="sh-card-title">@Localizer["Card_Time_Title"]</h2>
+    </div>
+    <div class="sh-empty">
+        <i class="bi bi-clock"></i>
+        <p style="font-size: 2.5rem; font-weight: 700; color: var(--sh-gray-300); letter-spacing: -0.04em; font-family: 'SF Mono', 'Fira Code', monospace; margin: 0.25rem 0;">@Localizer["Card_Time_Value"]</p>
+        <p>@Localizer["Card_Time_Empty"]</p>
+    </div>
+</div>
+
+<div class="sh-card">
+    <div class="sh-card-header">
+        <h2 class="sh-card-title">@Localizer["Table_Title"]</h2>
+    </div>
+
+    @if (Model.AssignedClients.Any())
+    {
+        <table class="sh-table">
+            <thead>
+            <tr>
+                <th>@Localizer["Col_Hostname"]</th>
+                <th>@Localizer["Col_Ip"]</th>
+                <th>@Localizer["Col_Status"]</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var client in Model.AssignedClients)
+            {
+                <tr>
+                    <td>@client.Hostname</td>
+                    <td>@client.IpAddress</td>
+                    <td><span class="sh-badge sh-badge-offline">–</span></td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="sh-empty">
+            <i class="bi bi-wifi-off"></i>
+            <p>@Localizer["Empty"]</p>
+        </div>
+    }
+</div>
