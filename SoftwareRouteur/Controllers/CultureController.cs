@@ -6,6 +6,7 @@ namespace SoftwareRouteur.Controllers;
 public class CultureController : Controller
 {
     [HttpPost]
+    [IgnoreAntiforgeryToken]
     public IActionResult Set(string culture, string returnUrl)
     {
         Response.Cookies.Append(
