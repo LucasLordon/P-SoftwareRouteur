@@ -45,6 +45,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     .AddCookie("ProfileCookie", options =>
     {
         options.ExpireTimeSpan = TimeSpan.FromHours(8);
+        options.LoginPath = "/profiles";
+        options.AccessDeniedPath = "/profiles";
     });
 
 var app = builder.Build();
