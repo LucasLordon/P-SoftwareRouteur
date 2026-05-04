@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Nav_Dashboard" xml:space="preserve"><value>Tableau de bord</value></data>
+  <data name="Nav_Profils" xml:space="preserve"><value>Profils</value></data>
+  <data name="Nav_Challenges" xml:space="preserve"><value>Challenges</value></data>
+  <data name="Nav_Rules" xml:space="preserve"><value>Règles &amp; Horaires</value></data>
+  <data name="User_Label" xml:space="preserve"><value>Profil</value></data>
+  <data name="Logout" xml:space="preserve"><value>Déconnexion</value></data>
+  <data name="Footer" xml:space="preserve"><value>© 2026 SafeHome — Software Router TPI</value></data>
+  <data name="Nav_Security" xml:space="preserve"><value>Sécurité</value></data>
+</root>

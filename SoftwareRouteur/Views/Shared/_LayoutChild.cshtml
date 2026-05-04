@@ -1,0 +1,105 @@
+@inject IViewLocalizer Localizer
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - SafeHome</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="~/SoftwareRouteur.styles.css" asp-append-version="true"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+</head>
+<body>
+<header class="sh-header">
+    <div class="sh-header-top">
+        <a class="sh-brand" asp-controller="Child" asp-action="Home">
+            <span class="sh-brand-icon"><i class="bi bi-shield-check"></i></span>
+            <span class="sh-brand-text">SafeHome</span>
+        </a>
+        <div class="sh-header-right">
+            <form asp-controller="Culture" asp-action="Set" method="post" class="sh-form-inline" id="childLangForm">
+                <input type="hidden" name="returnUrl" value="@($"{Context.Request.Path}{Context.Request.QueryString}")"/>
+                @{
+                    var lang = System.Globalization.CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
+                    var langItems = new SelectList(new[]
+                    {
+                        new { V = "fr", T = "🇫🇷 FR" },
+                        new { V = "en", T = "🇬🇧 EN" },
+                        new { V = "de", T = "🇩🇪 DE" }
+                    }, "V", "T", lang);
+                }
+                <select name="culture" class="sh-lang-select" asp-items="langItems"
+                        onchange="document.getElementById('childLangForm').submit()"></select>
+            </form>
+            <span class="sh-user">@User.Identity?.Name</span>
+            <form method="post" asp-controller="Auth" asp-action="ProfileLogout" class="sh-form-inline">
+                <button type="submit" class="sh-logout-btn">
+                    <i class="bi bi-box-arrow-right"></i>
+                    <span class="sh-logout-label">@Localizer["Logout"]</span>
+                </button>
+            </form>
+        </div>
+    </div>
+    <nav class="sh-tabs">
+        <a class="sh-tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Home" ? "active" : "")"
+           asp-controller="Child" asp-action="Home">
+            <i class="bi bi-house"></i> @Localizer["Nav_Home"]
+        </a>
+        <a class="sh-tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Challenges" ? "active" : "")"
+           asp-controller="Child" asp-action="Challenges">
+            <i class="bi bi-trophy"></i> @Localizer["Nav_Challenges"]
+        </a>
+        <a class="sh-tab @(ViewContext.RouteData.Values["action"]?.ToString() == "Devices" ? "active" : "")"
+           asp-controller="Child" asp-action="Devices">
+            <i class="bi bi-wifi"></i> @Localizer["Nav_Devices"]
+        </a>
+    </nav>
+</header>
+
+<div class="sh-main">
+    @if (TempData["Success"] != null)
+    {
+        <div class="sh-alert sh-alert-success">
+            <i class="bi bi-check-circle-fill"></i> @TempData["Success"]
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="sh-alert sh-alert-error">
+            <i class="bi bi-exclamation-triangle-fill"></i> @TempData["Error"]
+        </div>
+    }
+    <main>
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="sh-footer">
+    @Localizer["Footer"]
+</footer>
+
+<nav class="sh-bottom-nav">
+    <a class="sh-bottom-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Home" ? "active" : "")"
+       asp-controller="Child" asp-action="Home">
+        <i class="bi bi-house"></i>
+        <span>@Localizer["Nav_Home"]</span>
+    </a>
+    <a class="sh-bottom-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Challenges" ? "active" : "")"
+       asp-controller="Child" asp-action="Challenges">
+        <i class="bi bi-trophy"></i>
+        <span>@Localizer["Nav_Challenges"]</span>
+    </a>
+    <a class="sh-bottom-nav-item @(ViewContext.RouteData.Values["action"]?.ToString() == "Devices" ? "active" : "")"
+       asp-controller="Child" asp-action="Devices">
+        <i class="bi bi-wifi"></i>
+        <span>@Localizer["Nav_Devices"]</span>
+    </a>
+</nav>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<script src="~/js/site.js" asp-append-version="true"></script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
