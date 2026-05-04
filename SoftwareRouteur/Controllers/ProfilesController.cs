@@ -122,7 +122,7 @@ public class ProfilesController : Controller
     {
         return profile.Role == "parent"
             ? RedirectToAction("Dashboard", "Parent")
-            : RedirectToAction("Accueil", "Enfant");
+            : RedirectToAction("Home", "Child");
     }
 
     private void RecordFailedAttempt(string cacheKey)

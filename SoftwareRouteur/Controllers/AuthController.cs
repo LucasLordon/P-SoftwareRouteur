@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -102,6 +103,15 @@ public class AuthController : Controller
 
     [HttpPost]
     public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        await HttpContext.SignOutAsync("ProfileCookie");
+        return RedirectToAction("Index", "Profiles");
+    }
+
+    [HttpPost]
+    [Authorize(AuthenticationSchemes = "ProfileCookie")]
+    public async Task<IActionResult> ProfileLogout()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         await HttpContext.SignOutAsync("ProfileCookie");
