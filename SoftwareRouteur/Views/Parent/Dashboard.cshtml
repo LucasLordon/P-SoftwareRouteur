@@ -1,0 +1,90 @@
+@model ParentDashboardViewModel
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Page_Title"].Value;
+    Layout = "_LayoutParent";
+}
+
+<div class="sh-page-header">
+    <div>
+        <h1 class="sh-page-title">@Localizer["Page_Title"]</h1>
+        <p class="sh-page-subtitle">@Localizer["Page_Subtitle"]</p>
+    </div>
+</div>
+
+<div class="sh-stats-grid" style="grid-template-columns: repeat(3, 1fr);">
+    <div class="sh-stat-card">
+        <div class="sh-stat-header">
+            <i class="bi bi-people"></i>
+            <span>@Localizer["Stats_Children"]</span>
+        </div>
+        <div class="sh-stat-value">@Model.ChildProfiles.Count</div>
+    </div>
+    <div class="sh-stat-card">
+        <div class="sh-stat-header">
+            <i class="bi bi-trophy"></i>
+            <span>@Localizer["Stats_Challenges"]</span>
+        </div>
+        <div class="sh-stat-value">0</div>
+    </div>
+    <div class="sh-stat-card">
+        <div class="sh-stat-header">
+            <i class="bi bi-wifi"></i>
+            <span>@Localizer["Stats_Online"]</span>
+        </div>
+        <div class="sh-stat-value">0</div>
+    </div>
+</div>
+
+<div class="sh-card">
+    <div class="sh-card-header">
+        <h2 class="sh-card-title">@Localizer["Table_Title"]</h2>
+    </div>
+
+    @if (Model.ChildProfiles.Any())
+    {
+        <table class="sh-table">
+            <thead>
+            <tr>
+                <th>@Localizer["Col_Name"]</th>
+                <th>@Localizer["Col_Role"]</th>
+                <th>@Localizer["Col_Pin"]</th>
+                <th>@Localizer["Col_Devices"]</th>
+                <th class="sh-col-actions">@Localizer["Col_Actions"]</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.ChildProfiles)
+            {
+                <tr>
+                    <td>@item.Profile.DisplayName</td>
+                    <td><span class="sh-badge sh-badge-child">@Localizer["Badge_Child"]</span></td>
+                    <td>
+                        @if (item.Profile.PinHash != null)
+                        {
+                            <span class="sh-badge sh-badge-allow">@Localizer["Pin_Active"]</span>
+                        }
+                        else
+                        {
+                            <span class="sh-badge sh-badge-offline">@Localizer["Pin_Inactive"]</span>
+                        }
+                    </td>
+                    <td>@item.DeviceCount</td>
+                    <td class="sh-col-actions">
+                        <button type="button" class="sh-action-btn" title="@Localizer["Tooltip_View"]" disabled>
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="sh-empty">
+            <i class="bi bi-people"></i>
+            <p>@Localizer["Empty"]</p>
+        </div>
+    }
+</div>

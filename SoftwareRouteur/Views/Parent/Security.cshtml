@@ -1,0 +1,127 @@
+@model ParentSecurityViewModel
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = Localizer["Security_Title"].Value;
+    Layout = "_LayoutParent";
+}
+
+<div class="sh-page-header">
+    <div>
+        <h1 class="sh-page-title">@Localizer["Security_Title"]</h1>
+        <p class="sh-page-subtitle">@Localizer["Security_Subtitle"]</p>
+    </div>
+</div>
+
+<div class="sh-card sh-form-page">
+    <form method="post" action="/parent/security" id="securityForm">
+        @Html.AntiForgeryToken()
+        <div class="sh-modal-body">
+
+            @if (Model.ErrorMessage != null)
+            {
+                <div class="sh-alert sh-alert-error" style="margin-bottom: 1.25rem;">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    @Localizer[Model.ErrorMessage]
+                </div>
+            }
+            @if (Model.SuccessMessage != null)
+            {
+                <div class="sh-alert sh-alert-success" style="margin-bottom: 1.25rem;">
+                    <i class="bi bi-check-circle-fill"></i>
+                    @Localizer[Model.SuccessMessage]
+                </div>
+            }
+
+            <div class="sh-form-group">
+                <label class="sh-form-label">@Localizer["Security_CurrentPin"]</label>
+                <div class="sh-pin-inputs" id="currentPinInputs">
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                </div>
+                <input type="hidden" name="currentPin" id="currentPinCombined"/>
+            </div>
+
+            <div class="sh-form-group">
+                <label class="sh-form-label">@Localizer["Security_NewPin"]</label>
+                <div class="sh-pin-inputs" id="newPinInputs">
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                </div>
+                <input type="hidden" name="newPin" id="newPinCombined"/>
+            </div>
+
+            <div class="sh-form-group">
+                <label class="sh-form-label">@Localizer["Security_ConfirmPin"]</label>
+                <div class="sh-pin-inputs" id="confirmPinInputs">
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                    <input type="password" class="sh-pin-box" maxlength="1" inputmode="numeric" autocomplete="off"/>
+                </div>
+                <input type="hidden" name="confirmPin" id="confirmPinCombined"/>
+            </div>
+
+        </div>
+        <div class="sh-modal-footer">
+            <button type="submit" class="sh-btn-primary">
+                <i class="bi bi-check-lg"></i> @Localizer["Security_Save"]
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    var groups = [
+        { containerId: 'currentPinInputs', hiddenId: 'currentPinCombined' },
+        { containerId: 'newPinInputs',     hiddenId: 'newPinCombined'     },
+        { containerId: 'confirmPinInputs', hiddenId: 'confirmPinCombined' }
+    ];
+
+    var allBoxes = groups.map(function (g) {
+        return Array.from(document.getElementById(g.containerId).querySelectorAll('.sh-pin-box'));
+    });
+
+    groups.forEach(function (g, gi) {
+        var boxes = allBoxes[gi];
+        boxes.forEach(function (box, i) {
+            box.addEventListener('input', function () {
+                box.value = box.value.replace(/\D/g, '').slice(0, 1);
+                if (box.value) {
+                    if (i < boxes.length - 1) {
+                        boxes[i + 1].focus();
+                    } else if (gi < groups.length - 1) {
+                        allBoxes[gi + 1][0].focus();
+                    }
+                }
+            });
+
+            box.addEventListener('keydown', function (e) {
+                if (e.key === 'Backspace' && !box.value) {
+                    if (i > 0) {
+                        boxes[i - 1].value = '';
+                        boxes[i - 1].focus();
+                    } else if (gi > 0) {
+                        var prevBoxes = allBoxes[gi - 1];
+                        prevBoxes[prevBoxes.length - 1].focus();
+                    }
+                }
+            });
+        });
+    });
+
+    document.getElementById('securityForm').addEventListener('submit', function () {
+        groups.forEach(function (g, gi) {
+            document.getElementById(g.hiddenId).value = allBoxes[gi].map(function (b) { return b.value; }).join('');
+        });
+    });
+
+    allBoxes[0][0].focus();
+}());
+</script>
+}

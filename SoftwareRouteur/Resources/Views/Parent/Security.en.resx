@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <data name="Security_Title" xml:space="preserve"><value>Security</value></data>
+  <data name="Security_Subtitle" xml:space="preserve"><value>Change your login PIN</value></data>
+  <data name="Security_CurrentPin" xml:space="preserve"><value>Current PIN</value></data>
+  <data name="Security_NewPin" xml:space="preserve"><value>New PIN</value></data>
+  <data name="Security_ConfirmPin" xml:space="preserve"><value>Confirm new PIN</value></data>
+  <data name="Security_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="Security_Success" xml:space="preserve"><value>PIN changed successfully.</value></data>
+  <data name="Security_Error_WrongCurrent" xml:space="preserve"><value>Current PIN is incorrect.</value></data>
+  <data name="Security_Error_Mismatch" xml:space="preserve"><value>PINs do not match.</value></data>
+  <data name="Security_Error_SamePin" xml:space="preserve"><value>New PIN must differ from the current one.</value></data>
+  <data name="Security_Error_InvalidFormat" xml:space="preserve"><value>PIN must contain exactly 4 digits.</value></data>
+</root>
