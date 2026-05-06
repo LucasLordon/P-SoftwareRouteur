@@ -24,12 +24,6 @@ public class Client
     [Column("opnsense_rule_uuid")]
     public string? OpnsenseRuleUuid { get; set; }
 
-    [Column("opnsense_whitelist_uuid")]
-    public string? OpnsenseWhitelistUuid { get; set; }
-
-    [Column("opnsense_allow_rule_uuid")]
-    public string? OpnsenseAllowRuleUuid { get; set; }
-
     [Column("profile_id")]
     public int? ProfileId { get; set; }
 
