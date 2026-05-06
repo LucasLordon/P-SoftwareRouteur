@@ -35,7 +35,7 @@ public class OPNsenseService
     }
 
     // ================================================================
-    // ALIASES — Chaque client a un alias contenant ses destinations bloquées
+    // ALIASES - Chaque client a un alias contenant ses destinations bloquées
     // ================================================================
 
     /// <summary>
@@ -231,8 +231,147 @@ public class OPNsenseService
         return response != null;
     }
 
+    /// <summary>
+    /// Met à jour la description d'un alias existant.
+    /// </summary>
+    public async Task<bool> UpdateAliasDescriptionAsync(string aliasUuid, string description)
+    {
+        var data = new
+        {
+            alias = new
+            {
+                description = description
+            }
+        };
+
+        var response = await PostAsync($"/api/firewall/alias/setItem/{aliasUuid}", data);
+        if (response != null)
+        {
+            _logger.LogInformation("Description alias mise à jour (UUID: {Uuid})", aliasUuid);
+            await ReconfigureAliasesAsync();
+            return true;
+        }
+
+        _logger.LogWarning("Échec mise à jour description alias (UUID: {Uuid})", aliasUuid);
+        return false;
+    }
+
     // ================================================================
-    // FIREWALL RULES — Une règle de blocage par client
+    // WHITELIST ALIASES - Chaque client a un alias contenant ses destinations autorisées
+    // ================================================================
+
+    /// <summary>
+    /// Crée un alias de type Host pour les destinations autorisées d'un client SafeHome.
+    /// Nom convention : safehome_allow_{clientId}
+    /// </summary>
+    public async Task<string?> CreateWhitelistAliasAsync(int clientId, string description)
+    {
+        var aliasName = $"safehome_allow_{clientId}";
+        var data = new
+        {
+            alias = new
+            {
+                name = aliasName,
+                type = "host",
+                description = description,
+                content = "",
+                enabled = "1"
+            }
+        };
+
+        var response = await PostAsync("/api/firewall/alias/addItem", data);
+        if (response == null) return null;
+
+        var uuid = ExtractUuid(response);
+        if (uuid != null)
+        {
+            _logger.LogInformation("Alias whitelist créé : {Name} (UUID: {Uuid})", aliasName, uuid);
+            await ReconfigureAliasesAsync();
+        }
+        return uuid;
+    }
+
+    public async Task<bool> AddToWhitelistAsync(int clientId, string destination)
+    {
+        var aliasName = $"safehome_allow_{clientId}";
+
+        var uuid = await GetAliasUuidByNameAsync(aliasName);
+        if (uuid == null)
+        {
+            _logger.LogWarning("Alias whitelist introuvable : {Alias}", aliasName);
+            return false;
+        }
+
+        var entries = await GetAliasContentAsListAsync(uuid);
+        if (entries == null) return false;
+
+        if (!entries.Contains(destination))
+            entries.Add(destination);
+
+        var ok = await SetAliasContentAsync(uuid, entries);
+        if (ok)
+        {
+            _logger.LogInformation("Ajouté {Dest} à l'alias whitelist {Alias}", destination, aliasName);
+            await ReconfigureAliasesAsync();
+        }
+        return ok;
+    }
+
+    public async Task<bool> RemoveFromWhitelistAsync(int clientId, string destination)
+    {
+        var aliasName = $"safehome_allow_{clientId}";
+
+        var uuid = await GetAliasUuidByNameAsync(aliasName);
+        if (uuid == null)
+        {
+            _logger.LogWarning("Alias whitelist introuvable : {Alias}", aliasName);
+            return false;
+        }
+
+        var entries = await GetAliasContentAsListAsync(uuid);
+        if (entries == null) return false;
+
+        var removed = entries.RemoveAll(e =>
+            string.Equals(e.TrimEnd('.'), destination.TrimEnd('.'),
+            StringComparison.OrdinalIgnoreCase)) > 0;
+
+        if (!removed)
+        {
+            _logger.LogWarning("Destination {Dest} introuvable dans whitelist {Alias}", destination, aliasName);
+            return false;
+        }
+
+        var ok = await SetAliasContentAsync(uuid, entries);
+        if (ok)
+        {
+            _logger.LogInformation("Retiré {Dest} de l'alias whitelist {Alias}", destination, aliasName);
+            await ReconfigureAliasesAsync();
+        }
+        return ok;
+    }
+
+    /// <summary>
+    /// Supprime l'alias whitelist d'un client (quand le client est supprimé de SafeHome).
+    /// </summary>
+    public async Task<bool> DeleteWhitelistAliasAsync(int clientId)
+    {
+        var aliasName = $"safehome_allow_{clientId}";
+
+        var uuid = await GetAliasUuidByNameAsync(aliasName);
+        if (uuid == null) return false;
+
+        var response = await PostAsync($"/api/firewall/alias/delItem/{uuid}", new { });
+        if (response != null)
+        {
+            _logger.LogInformation("Alias whitelist supprimé : {Alias}", aliasName);
+            await ReconfigureAliasesAsync();
+            return true;
+        }
+        return false;
+    }
+
+    // ================================================================
+    // FIREWALL RULES - Une règle de blocage par client
     // ================================================================
 
     /// <summary>
@@ -269,7 +408,48 @@ public class OPNsenseService
         var uuid = ExtractUuid(response);
         if (uuid != null)
         {
-            _logger.LogInformation("Règle créée pour client {Ip} → alias {Alias} (UUID: {Uuid})",
+            _logger.LogInformation("Règle créée pour client {Ip} -> alias {Alias} (UUID: {Uuid})",
+                clientIp, aliasName, uuid);
+            await ApplyFirewallRulesAsync();
+        }
+        return uuid;
+    }
+
+    /// <summary>
+    /// Crée une règle firewall qui autorise le trafic du client vers son alias whitelist.
+    /// La règle est : PASS traffic FROM client_ip TO alias safehome_allow_{clientId}
+    /// </summary>
+    public async Task<string?> CreateAllowRuleAsync(int clientId, string clientIp, string description)
+    {
+        var aliasName = $"safehome_allow_{clientId}";
+
+        var data = new
+        {
+            rule = new
+            {
+                enabled = "1",
+                action = "pass",
+                quick = "1",
+                interface_field = "lan",
+                direction = "in",
+                ipprotocol = "inet",
+                protocol = "any",
+                source_net = clientIp,
+                source_not = "0",
+                destination_net = aliasName,
+                destination_not = "0",
+                description = $"SafeHome allow: {description}",
+                log = "1"
+            }
+        };
+
+        var response = await PostAsync("/api/firewall/filter/addRule", data);
+        if (response == null) return null;
+
+        var uuid = ExtractUuid(response);
+        if (uuid != null)
+        {
+            _logger.LogInformation("Règle allow créée pour client {Ip} -> alias {Alias} (UUID: {Uuid})",
                 clientIp, aliasName, uuid);
             await ApplyFirewallRulesAsync();
         }
@@ -336,8 +516,24 @@ public class OPNsenseService
         return rules;
     }
 
+    /// <summary>
+    /// Active ou désactive le blocage d'un appareil via sa règle firewall.
+    /// blocked = true -> règle activée (appareil bloqué) ; false -> règle désactivée.
+    /// </summary>
+    public async Task<bool> SetDeviceBlockedAsync(string blockRuleUuid, bool blocked)
+    {
+        var ok = await ToggleFirewallRuleAsync(blockRuleUuid, blocked);
+        if (ok)
+            _logger.LogInformation("Device {Etat} via règle {Uuid}",
+                blocked ? "bloqué" : "débloqué", blockRuleUuid);
+        else
+            _logger.LogWarning("Échec {Action} device via règle {Uuid}",
+                blocked ? "blocage" : "déblocage", blockRuleUuid);
+        return ok;
+    }
+
     // ================================================================
-    // APPLY — Appliquer les changements
+    // APPLY - Appliquer les changements
     // ================================================================
 
     /// <summary>
@@ -401,7 +597,7 @@ public class OPNsenseService
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("OPNsense API POST {Endpoint} → {Status}: {Body}",
+                _logger.LogWarning("OPNsense API POST {Endpoint} -> {Status}: {Body}",
                     endpoint, response.StatusCode, body);
                 return null;
             }
@@ -424,7 +620,7 @@ public class OPNsenseService
 
             if (!response.IsSuccessStatusCode)
             {
-                _logger.LogWarning("OPNsense API GET {Endpoint} → {Status}: {Body}",
+                _logger.LogWarning("OPNsense API GET {Endpoint} -> {Status}: {Body}",
                     endpoint, response.StatusCode, body);
                 return null;
             }
