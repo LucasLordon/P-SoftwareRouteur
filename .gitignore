@@ -34,6 +34,7 @@ mono_crash.*
 bin/
 obj/
 publish/
+publish_output/
 
 [Dd]ebug/
 [Dd]ebugPublic/
