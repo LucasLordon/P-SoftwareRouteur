@@ -9,4 +9,6 @@
   <data name="Success_Applied" xml:space="preserve"><value>Firewall-Regeln erfolgreich aktualisiert.</value></data>
   <data name="Error_Sync" xml:space="preserve"><value>Synchronisationsfehler: {0}</value></data>
   <data name="Error_Connect" xml:space="preserve"><value>Verbindung zu VM2 nicht möglich: {0}</value></data>
+  <data name="Error_ConflictOpposite" xml:space="preserve"><value>Konflikt: Eine {0}-Regel für „{1}" auf Client {2} existiert bereits. Löschen Sie sie, bevor Sie eine entgegengesetzte erstellen.</value></data>
+  <data name="Error_ConflictDuplicate" xml:space="preserve"><value>Duplikat: Eine identische Regel für „{0}" auf Client {1} existiert bereits.</value></data>
 </root>

@@ -9,4 +9,6 @@
   <data name="Success_Applied" xml:space="preserve"><value>Règles du pare-feu mises à jour avec succès.</value></data>
   <data name="Error_Sync" xml:space="preserve"><value>Erreur lors de la synchronisation : {0}</value></data>
   <data name="Error_Connect" xml:space="preserve"><value>Impossible de se connecter à VM2 : {0}</value></data>
+  <data name="Error_ConflictOpposite" xml:space="preserve"><value>Conflit : une règle {0} existe déjà pour « {1} » sur le client {2}. Supprimez-la avant d'en créer une opposée.</value></data>
+  <data name="Error_ConflictDuplicate" xml:space="preserve"><value>Doublon : une règle identique existe déjà pour « {0} » sur le client {1}.</value></data>
 </root>

@@ -46,6 +46,22 @@ public class FirewallController : Controller
             return RedirectToAction("Index");
         }
 
+        var conflictRule = await _context.FirewallRules
+            .Include(r => r.Client)
+            .FirstOrDefaultAsync(r =>
+                r.ClientId == clientId &&
+                r.Destination.ToLower() == destination.ToLower());
+
+        if (conflictRule != null)
+        {
+            TempData["Error"] = conflictRule.Action != action
+                ? string.Format(_localizer["Error_ConflictOpposite"].Value,
+                    conflictRule.Action, destination, conflictRule.Client!.Hostname)
+                : string.Format(_localizer["Error_ConflictDuplicate"].Value,
+                    destination, conflictRule.Client!.Hostname);
+            return RedirectToAction("Index");
+        }
+
         var rule = new FirewallRule
         {
             ClientId = clientId,
@@ -63,9 +79,14 @@ public class FirewallController : Controller
             _logger.LogInformation("Appel OPNsense AddToAliasAsync — clientId={ClientId}, destination={Destination}", clientId, destination);
             await _opnsense.AddToAliasAsync(clientId, destination);
         }
+        else if (action == "allow")
+        {
+            _logger.LogInformation("Appel OPNsense AddToWhitelistAsync — clientId={ClientId}, destination={Destination}", clientId, destination);
+            await _opnsense.AddToWhitelistAsync(clientId, destination);
+        }
         else
         {
-            _logger.LogWarning("Appel OPNsense IGNORÉ — action='{Action}' ne correspond pas à 'deny'", action);
+            _logger.LogWarning("Appel OPNsense IGNORÉ — action='{Action}' ne correspond pas à 'deny' ou 'allow'", action);
         }
 
         TempData["Success"] = _localizer["Success_Created"].Value;
@@ -85,9 +106,14 @@ public class FirewallController : Controller
                 _logger.LogInformation("Appel OPNsense RemoveFromAliasAsync — clientId={ClientId}, destination={Destination}", rule.ClientId, rule.Destination);
                 await _opnsense.RemoveFromAliasAsync(rule.ClientId, rule.Destination);
             }
+            else if (rule.Action == "allow")
+            {
+                _logger.LogInformation("Appel OPNsense RemoveFromWhitelistAsync — clientId={ClientId}, destination={Destination}", rule.ClientId, rule.Destination);
+                await _opnsense.RemoveFromWhitelistAsync(rule.ClientId, rule.Destination);
+            }
             else
             {
-                _logger.LogWarning("Appel OPNsense IGNORÉ — action='{Action}' ne correspond pas à 'deny'", rule.Action);
+                _logger.LogWarning("Appel OPNsense IGNORÉ — action='{Action}' ne correspond pas à 'deny' ou 'allow'", rule.Action);
             }
 
             _context.FirewallRules.Remove(rule);
@@ -104,15 +130,37 @@ public class FirewallController : Controller
         _logger.LogDebug("Edit rule id={Id} — ancien état: action='{OldAction}', clientId={OldClientId}, destination='{OldDestination}'", id, rule?.Action, rule?.ClientId, rule?.Destination);
         if (rule != null)
         {
+            var conflictRule = await _context.FirewallRules
+                .Include(r => r.Client)
+                .FirstOrDefaultAsync(r =>
+                    r.Id != id &&
+                    r.ClientId == clientId &&
+                    r.Destination.ToLower() == destination.ToLower());
+
+            if (conflictRule != null)
+            {
+                TempData["Error"] = conflictRule.Action != action
+                    ? string.Format(_localizer["Error_ConflictOpposite"].Value,
+                        conflictRule.Action, destination, conflictRule.Client!.Hostname)
+                    : string.Format(_localizer["Error_ConflictDuplicate"].Value,
+                        destination, conflictRule.Client!.Hostname);
+                return RedirectToAction("Index");
+            }
+
             _logger.LogDebug("Condition OPNsense (ancien état) — action == 'deny' ? {Result} (valeur reçue: '{Action}')", rule.Action == "deny", rule.Action);
             if (rule.Action == "deny")
             {
                 _logger.LogInformation("Appel OPNsense RemoveFromAliasAsync (ancien état) — clientId={ClientId}, destination={Destination}", rule.ClientId, rule.Destination);
                 await _opnsense.RemoveFromAliasAsync(rule.ClientId, rule.Destination);
             }
+            else if (rule.Action == "allow")
+            {
+                _logger.LogInformation("Appel OPNsense RemoveFromWhitelistAsync (ancien état) — clientId={ClientId}, destination={Destination}", rule.ClientId, rule.Destination);
+                await _opnsense.RemoveFromWhitelistAsync(rule.ClientId, rule.Destination);
+            }
             else
             {
-                _logger.LogWarning("Appel OPNsense IGNORÉ (ancien état) — action='{Action}' ne correspond pas à 'deny'", rule.Action);
+                _logger.LogWarning("Appel OPNsense IGNORÉ (ancien état) — action='{Action}' ne correspond pas à 'deny' ou 'allow'", rule.Action);
             }
 
             rule.ClientId = clientId;
@@ -120,7 +168,7 @@ public class FirewallController : Controller
             rule.Destination = destination;
             rule.Action = action;
             await _context.SaveChangesAsync();
-            
+
             _logger.LogDebug("Edit rule id={Id} — nouvel état: action='{Action}', clientId={ClientId}, destination='{Destination}'", id, action, clientId, destination);
             _logger.LogDebug("Condition OPNsense (nouvel état) — action == 'deny' ? {Result} (valeur reçue: '{Action}')", action == "deny", action);
             if (action == "deny")
@@ -128,9 +176,14 @@ public class FirewallController : Controller
                 _logger.LogInformation("Appel OPNsense AddToAliasAsync (nouvel état) — clientId={ClientId}, destination={Destination}", clientId, destination);
                 await _opnsense.AddToAliasAsync(clientId, destination);
             }
+            else if (action == "allow")
+            {
+                _logger.LogInformation("Appel OPNsense AddToWhitelistAsync (nouvel état) — clientId={ClientId}, destination={Destination}", clientId, destination);
+                await _opnsense.AddToWhitelistAsync(clientId, destination);
+            }
             else
             {
-                _logger.LogWarning("Appel OPNsense IGNORÉ (nouvel état) — action='{Action}' ne correspond pas à 'deny'", action);
+                _logger.LogWarning("Appel OPNsense IGNORÉ (nouvel état) — action='{Action}' ne correspond pas à 'deny' ou 'allow'", action);
             }
 
             TempData["Success"] = _localizer["Success_Updated"].Value;

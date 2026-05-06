@@ -9,4 +9,6 @@
   <data name="Success_Applied" xml:space="preserve"><value>Firewall rules successfully updated.</value></data>
   <data name="Error_Sync" xml:space="preserve"><value>Synchronisation error: {0}</value></data>
   <data name="Error_Connect" xml:space="preserve"><value>Cannot connect to VM2: {0}</value></data>
+  <data name="Error_ConflictOpposite" xml:space="preserve"><value>Conflict: a {0} rule already exists for '{1}' on client {2}. Delete it before creating an opposite rule.</value></data>
+  <data name="Error_ConflictDuplicate" xml:space="preserve"><value>Duplicate: an identical rule already exists for '{0}' on client {1}.</value></data>
 </root>
