@@ -15,12 +15,14 @@ public class ClientController : Controller
     private readonly AppDbContext _context;
     private readonly IStringLocalizer<ClientController> _localizer;
     private readonly OPNsenseService _opnsense;
+    private readonly ILogger<ClientController> _logger;
 
-    public ClientController(AppDbContext context, IStringLocalizer<ClientController> localizer, OPNsenseService opnsense)
+    public ClientController(AppDbContext context, IStringLocalizer<ClientController> localizer, OPNsenseService opnsense, ILogger<ClientController> logger)
     {
         _context = context;
         _localizer = localizer;
         _opnsense = opnsense;
+        _logger = logger;
     }
 
     public IActionResult Index(int page = 1, int pageSize = 10)
@@ -65,17 +67,28 @@ public class ClientController : Controller
         };
         _context.Clients.Add(client);
         await _context.SaveChangesAsync();
-        
+
         var aliasUuid = await _opnsense.CreateAliasAsync(
             client.Id,
             $"Blocklist pour {client.Hostname}");
         client.OpnsenseAliasUuid = aliasUuid;
-        
+
         var ruleUuid = await _opnsense.CreateBlockRuleAsync(
             client.Id,
             client.IpAddress,
             $"Block {client.Hostname}");
         client.OpnsenseRuleUuid = ruleUuid;
+
+        var whitelistUuid = await _opnsense.CreateWhitelistAliasAsync(
+            client.Id,
+            $"Whitelist pour {client.Hostname}");
+        client.OpnsenseWhitelistUuid = whitelistUuid;
+
+        var allowRuleUuid = await _opnsense.CreateAllowRuleAsync(
+            client.Id,
+            client.IpAddress,
+            $"Allow {client.Hostname}");
+        client.OpnsenseAllowRuleUuid = allowRuleUuid;
 
         await _context.SaveChangesAsync();
 
@@ -104,6 +117,16 @@ public class ClientController : Controller
             client.Hostname = hostname;
             client.IpAddress = ipAddress;
             await _context.SaveChangesAsync();
+
+            if (client.OpnsenseAliasUuid != null)
+            {
+                var ok = await _opnsense.UpdateAliasDescriptionAsync(
+                    client.OpnsenseAliasUuid,
+                    $"Blocklist pour {client.Hostname}");
+                if (!ok)
+                    _logger.LogWarning("Échec mise à jour description alias pour client {Id}", client.Id);
+            }
+
             TempData["Success"] = string.Format(_localizer["Success_Updated"].Value, hostname);
         }
         return RedirectToAction("Index");
@@ -117,8 +140,12 @@ public class ClientController : Controller
         {
             if (client.OpnsenseRuleUuid != null)
                 await _opnsense.DeleteFirewallRuleAsync(client.OpnsenseRuleUuid);
-            
+
+            if (client.OpnsenseAllowRuleUuid != null)
+                await _opnsense.DeleteFirewallRuleAsync(client.OpnsenseAllowRuleUuid);
+
             await _opnsense.DeleteAliasAsync(client.Id);
+            await _opnsense.DeleteWhitelistAliasAsync(client.Id);
 
             _context.Clients.Remove(client);
             await _context.SaveChangesAsync();
