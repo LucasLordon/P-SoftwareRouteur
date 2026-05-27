@@ -4,4 +4,14 @@
   <resheader name="version"><value>2.0</value></resheader>
   <data name="Page_Title" xml:space="preserve"><value>My Devices</value></data>
   <data name="Coming_Soon" xml:space="preserve"><value>Coming soon.</value></data>
+  <data name="Devices_Title" xml:space="preserve"><value>My devices</value></data>
+  <data name="Devices_AccessGranted" xml:space="preserve"><value>Access granted</value></data>
+  <data name="Devices_AccessBlocked" xml:space="preserve"><value>Access blocked</value></data>
+  <data name="Devices_ActiveReward" xml:space="preserve"><value>Active reward</value></data>
+  <data name="Devices_PausedReward" xml:space="preserve"><value>Reward paused</value></data>
+  <data name="Devices_TempAuth" xml:space="preserve"><value>Temporary access until</value></data>
+  <data name="Devices_ScheduleActive" xml:space="preserve"><value>Schedule active</value></data>
+  <data name="Devices_NoRestriction" xml:space="preserve"><value>No active restriction</value></data>
+  <data name="Devices_Remaining" xml:space="preserve"><value>remaining</value></data>
+  <data name="Devices_EmptyState" xml:space="preserve"><value>No devices assigned to this profile.</value></data>
 </root>

@@ -325,5 +325,62 @@ public class ChildController : Controller
     }
 
     [HttpGet("devices")]
-    public IActionResult Devices() => View();
+    public async Task<IActionResult> Devices()
+    {
+        var profileId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var now = DateTime.Now;
+
+        var devices = await _context.Clients
+            .Where(c => c.ProfileId == profileId)
+            .ToListAsync();
+
+        var activeReward = await _context.Rewards
+            .Include(r => r.Challenge)
+            .FirstOrDefaultAsync(r => r.ChildProfileId == profileId && r.Status == "active");
+
+        var pausedReward = await _context.Rewards
+            .Include(r => r.Challenge)
+            .FirstOrDefaultAsync(r => r.ChildProfileId == profileId && r.Status == "paused");
+
+        var activeTempAuth = await _context.TempAuthorizations
+            .FirstOrDefaultAsync(t => t.ProfileId == profileId && t.ExpiresAt > now);
+
+        var blockingSchedules = await _context.Schedules
+            .Where(s => (s.ProfileId == profileId || s.ProfileId == null) && s.IsBlocking)
+            .ToListAsync();
+
+        double pct = 0;
+        if (activeReward != null)
+        {
+            var total = activeReward.TotalMinutes * 60;
+            var consumed = total - activeReward.RemainingSeconds;
+            pct = total > 0 ? Math.Clamp(consumed * 100.0 / total, 0, 100) : 0;
+        }
+
+        bool isScheduleBlocking = activeReward == null
+            && pausedReward == null
+            && activeTempAuth == null
+            && blockingSchedules.Any(s => IsCurrentlyInWindow(s, now));
+
+        var vm = new DevicesViewModel
+        {
+            Devices           = devices,
+            ActiveReward      = activeReward,
+            PausedReward      = pausedReward,
+            ActiveTempAuth    = activeTempAuth,
+            BlockingSchedules = blockingSchedules,
+            RewardProgressPct = pct,
+            IsScheduleBlocking = isScheduleBlocking,
+        };
+
+        return View(vm);
+    }
+
+    private static bool IsCurrentlyInWindow(Schedule s, DateTime now)
+    {
+        var dayIndex = ((int)now.DayOfWeek + 6) % 7; // Mon=0 … Sun=6
+        var currentTime = TimeOnly.FromDateTime(now);
+        var dayActive = s.Days.Length >= 7 && s.Days[dayIndex] == '1';
+        return dayActive && currentTime >= s.TimeStart && currentTime <= s.TimeEnd;
+    }
 }

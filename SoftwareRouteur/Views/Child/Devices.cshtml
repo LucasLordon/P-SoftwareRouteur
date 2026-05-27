@@ -1,18 +1,120 @@
+@model DevicesViewModel
 @inject IViewLocalizer Localizer
 @{
     ViewData["Title"] = Localizer["Page_Title"].Value;
     Layout = "_LayoutChild";
+
+    string FormatSecs(int s) {
+        var ts = TimeSpan.FromSeconds(s);
+        return ts.TotalHours >= 1
+            ? $"{(int)ts.TotalHours}h{ts.Minutes:D2}"
+            : $"{ts.Minutes}:{ts.Seconds:D2}";
+    }
+
+    bool hasActiveReward  = Model.ActiveReward != null;
+    bool hasPausedReward  = !hasActiveReward && Model.PausedReward != null;
+    bool hasTempAuth      = !hasActiveReward && !hasPausedReward && Model.ActiveTempAuth != null;
+    bool scheduleBlocking = Model.IsScheduleBlocking;
 }
 
 <div class="sh-page-header">
     <div>
-        <h1 class="sh-page-title">@Localizer["Page_Title"]</h1>
+        <h1 class="sh-page-title">@Localizer["Devices_Title"]</h1>
     </div>
 </div>
 
-<div class="sh-card">
-    <div class="sh-empty">
-        <i class="bi bi-hourglass"></i>
-        <p>@Localizer["Coming_Soon"]</p>
+@if (!Model.Devices.Any())
+{
+    <div class="sh-card">
+        <div class="sh-empty">
+            <i class="bi bi-phone"></i>
+            <p>@Localizer["Devices_EmptyState"]</p>
+        </div>
     </div>
-</div>
+}
+else
+{
+    <div class="sh-rewards-grid">
+        @foreach (var device in Model.Devices)
+        {
+            @if (hasActiveReward)
+            {
+                <div class="sh-reward-card">
+                    <div>
+                        <strong>@device.Hostname</strong><br/>
+                        <small style="color: var(--sh-gray-400)">@device.IpAddress</small>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>@Localizer["Devices_ActiveReward"]</strong><br/>
+                        <span style="font-size: 0.875rem; color: var(--sh-gray-500)">
+                            @FormatSecs(Model.ActiveReward!.RemainingSeconds) @Localizer["Devices_Remaining"]
+                        </span>
+                    </div>
+                    <div class="sh-progress-bar" style="margin-top: 0.5rem;">
+                        <div class="sh-progress-fill" style="width: @Model.RewardProgressPct.ToString("F0", System.Globalization.CultureInfo.InvariantCulture)%"></div>
+                    </div>
+                </div>
+            }
+            else if (hasPausedReward)
+            {
+                <div class="sh-reward-card" style="background: var(--sh-gray-100);">
+                    <div>
+                        <strong>@device.Hostname</strong><br/>
+                        <small style="color: var(--sh-gray-400)">@device.IpAddress</small>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>@Localizer["Devices_PausedReward"]</strong><br/>
+                        <span style="font-size: 0.875rem; color: var(--sh-gray-500)">
+                            @FormatSecs(Model.PausedReward!.RemainingSeconds) @Localizer["Devices_Remaining"]
+                        </span>
+                    </div>
+                </div>
+            }
+            else if (hasTempAuth)
+            {
+                <div class="sh-reward-card">
+                    <div>
+                        <strong>@device.Hostname</strong><br/>
+                        <small style="color: var(--sh-gray-400)">@device.IpAddress</small>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>@Localizer["Devices_AccessGranted"]</strong><br/>
+                        <span style="font-size: 0.875rem; color: var(--sh-gray-500)">
+                            @Localizer["Devices_TempAuth"] @Model.ActiveTempAuth!.ExpiresAt.ToString("HH:mm")
+                        </span>
+                    </div>
+                </div>
+            }
+            else if (scheduleBlocking)
+            {
+                <div class="sh-reward-card" style="opacity: 0.6;">
+                    <div>
+                        <strong>@device.Hostname</strong><br/>
+                        <small style="color: var(--sh-gray-400)">@device.IpAddress</small>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>@Localizer["Devices_AccessBlocked"]</strong><br/>
+                        <span style="font-size: 0.875rem; color: var(--sh-gray-500)">
+                            @Localizer["Devices_ScheduleActive"]
+                        </span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="sh-reward-card">
+                    <div>
+                        <strong>@device.Hostname</strong><br/>
+                        <small style="color: var(--sh-gray-400)">@device.IpAddress</small>
+                    </div>
+                    <div style="margin-top: 0.5rem;">
+                        <strong>@Localizer["Devices_AccessGranted"]</strong><br/>
+                        <span style="font-size: 0.875rem; color: var(--sh-gray-500)">
+                            @Localizer["Devices_NoRestriction"]
+                        </span>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+}
