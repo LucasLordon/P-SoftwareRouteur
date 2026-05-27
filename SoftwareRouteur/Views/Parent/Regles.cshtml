@@ -57,6 +57,10 @@
                             </td>
                             <td>@rule.CreatedAt.ToShortDateString()</td>
                             <td class="sh-col-actions">
+                                <button class="sh-action-btn" title="@Localizer["Tooltip_Edit"]"
+                                        onclick="openEditProfileRuleModal(@rule.Id, '@rule.RuleType', '@Html.Raw(rule.Destination.Replace("'","\\\'"))', '@rule.Action')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
                                 <form method="post" action="/parent/regles/profile/delete/@rule.Id" class="sh-form-inline"
                                       onsubmit="return confirm('@Localizer["Confirm_Delete"]')">
                                     @Html.AntiForgeryToken()
@@ -116,6 +120,10 @@
                             </td>
                             <td>@rule.CreatedAt.ToShortDateString()</td>
                             <td class="sh-col-actions">
+                                <button class="sh-action-btn" title="@Localizer["Tooltip_Edit"]"
+                                        onclick="openEditDeviceRuleModal(@rule.Id, '@rule.RuleType', '@Html.Raw(rule.Destination.Replace("'","\\\'"))', '@rule.Action')">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
                                 <form method="post" action="/parent/regles/device/delete/@rule.Id" class="sh-form-inline"
                                       onsubmit="return confirm('@Localizer["Confirm_Delete"]')">
                                     @Html.AntiForgeryToken()
@@ -140,6 +148,90 @@
             </div>
         </div>
     }
+</div>
+
+<!-- Edit Profile Rule Modal -->
+<div class="sh-modal-backdrop" id="editProfileRuleModal" onclick="if(event.target===this) this.classList.remove('show')">
+    <div class="sh-modal">
+        <div class="sh-modal-header">
+            <h3 class="sh-modal-title">@Localizer["Modal_Edit_Profile_Title"]</h3>
+            <button class="sh-modal-close" onclick="document.getElementById('editProfileRuleModal').classList.remove('show')">&times;</button>
+        </div>
+        <form method="post" id="editProfileRuleForm" action="">
+            @Html.AntiForgeryToken()
+            <div class="sh-modal-body">
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Type"]</label>
+                    <select name="ruleType" id="editProfileRuleType" class="sh-input" required>
+                        <option value="domain">@Localizer["Type_Domain"]</option>
+                        <option value="ip">@Localizer["Type_IP"]</option>
+                        <option value="cidr">@Localizer["Type_CIDR"]</option>
+                    </select>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Destination"]</label>
+                    <input type="text" name="destination" id="editProfileRuleDest" class="sh-input"
+                           placeholder="@Localizer["Placeholder_Destination"]" required/>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Action"]</label>
+                    <select name="action" id="editProfileRuleAction" class="sh-input" required>
+                        <option value="deny">@Localizer["Action_Deny"]</option>
+                        <option value="allow">@Localizer["Action_Allow"]</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sh-modal-footer">
+                <button type="button" class="sh-btn-cancel"
+                        onclick="document.getElementById('editProfileRuleModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
+                <button type="submit" class="sh-btn-submit">
+                    <i class="bi bi-check-lg"></i> @Localizer["Btn_Save"]
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Device Rule Modal -->
+<div class="sh-modal-backdrop" id="editDeviceRuleModal" onclick="if(event.target===this) this.classList.remove('show')">
+    <div class="sh-modal">
+        <div class="sh-modal-header">
+            <h3 class="sh-modal-title">@Localizer["Modal_Edit_Device_Title"]</h3>
+            <button class="sh-modal-close" onclick="document.getElementById('editDeviceRuleModal').classList.remove('show')">&times;</button>
+        </div>
+        <form method="post" id="editDeviceRuleForm" action="">
+            @Html.AntiForgeryToken()
+            <div class="sh-modal-body">
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Type"]</label>
+                    <select name="ruleType" id="editDeviceRuleType" class="sh-input" required>
+                        <option value="domain">@Localizer["Type_Domain"]</option>
+                        <option value="ip">@Localizer["Type_IP"]</option>
+                        <option value="cidr">@Localizer["Type_CIDR"]</option>
+                    </select>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Destination"]</label>
+                    <input type="text" name="destination" id="editDeviceRuleDest" class="sh-input"
+                           placeholder="@Localizer["Placeholder_Destination"]" required/>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Action"]</label>
+                    <select name="action" id="editDeviceRuleAction" class="sh-input" required>
+                        <option value="deny">@Localizer["Action_Deny"]</option>
+                        <option value="allow">@Localizer["Action_Allow"]</option>
+                    </select>
+                </div>
+            </div>
+            <div class="sh-modal-footer">
+                <button type="button" class="sh-btn-cancel"
+                        onclick="document.getElementById('editDeviceRuleModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
+                <button type="submit" class="sh-btn-submit">
+                    <i class="bi bi-check-lg"></i> @Localizer["Btn_Save"]
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Add Rule Modal -->
@@ -225,6 +317,22 @@
             } else if (targetType.startsWith('device_')) {
                 document.getElementById('clientId').value = targetType.split('_')[1];
             }
+        }
+
+        function openEditProfileRuleModal(id, ruleType, destination, action) {
+            document.getElementById('editProfileRuleForm').action = '/parent/regles/profile/edit/' + id;
+            document.getElementById('editProfileRuleType').value = ruleType;
+            document.getElementById('editProfileRuleDest').value = destination;
+            document.getElementById('editProfileRuleAction').value = action;
+            document.getElementById('editProfileRuleModal').classList.add('show');
+        }
+
+        function openEditDeviceRuleModal(id, ruleType, destination, action) {
+            document.getElementById('editDeviceRuleForm').action = '/parent/regles/device/edit/' + id;
+            document.getElementById('editDeviceRuleType').value = ruleType;
+            document.getElementById('editDeviceRuleDest').value = destination;
+            document.getElementById('editDeviceRuleAction').value = action;
+            document.getElementById('editDeviceRuleModal').classList.add('show');
         }
     </script>
 }

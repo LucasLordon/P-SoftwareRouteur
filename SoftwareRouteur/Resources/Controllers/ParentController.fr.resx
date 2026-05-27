@@ -43,4 +43,9 @@
   <data name="Schedule_Success_Updated" xml:space="preserve"><value>Plage horaire modifiée avec succès.</value></data>
   <data name="TempAuth_Error_InvalidAllowType" xml:space="preserve"><value>Type d'autorisation invalide.</value></data>
   <data name="TempAuth_Error_InvalidAllowDestination" xml:space="preserve"><value>Destination invalide pour le type sélectionné.</value></data>
+  <data name="Profile_Success_Updated" xml:space="preserve"><value>Profil modifié avec succès.</value></data>
+  <data name="Profile_Error_PinFormat" xml:space="preserve"><value>Le PIN doit contenir exactement 4 chiffres.</value></data>
+  <data name="Profile_Error_PinMismatch" xml:space="preserve"><value>Les codes PIN ne correspondent pas.</value></data>
+  <data name="ProfileRule_Success_Updated" xml:space="preserve"><value>Règle de profil modifiée avec succès.</value></data>
+  <data name="DeviceRule_Success_Updated" xml:space="preserve"><value>Règle d'appareil modifiée avec succès.</value></data>
 </root>

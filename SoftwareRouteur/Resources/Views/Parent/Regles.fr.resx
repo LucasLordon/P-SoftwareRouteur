@@ -34,4 +34,8 @@
   <data name="Confirm_Delete" xml:space="preserve"><value>Êtes-vous sûr de vouloir supprimer cette règle ?</value></data>
   <data name="Empty_ProfileRules" xml:space="preserve"><value>Aucune règle de profil créée encore.</value></data>
   <data name="Empty_DeviceRules" xml:space="preserve"><value>Aucune règle d'appareil créée encore.</value></data>
+  <data name="Tooltip_Edit" xml:space="preserve"><value>Modifier</value></data>
+  <data name="Modal_Edit_Profile_Title" xml:space="preserve"><value>Modifier Règle de Profil</value></data>
+  <data name="Modal_Edit_Device_Title" xml:space="preserve"><value>Modifier Règle d'Appareil</value></data>
+  <data name="Btn_Save" xml:space="preserve"><value>Enregistrer</value></data>
 </root>

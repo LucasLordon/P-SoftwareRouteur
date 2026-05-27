@@ -8,6 +8,12 @@
   <data name="Col_Profile" xml:space="preserve"><value>Profil</value></data>
   <data name="Col_Devices" xml:space="preserve"><value>Geräte</value></data>
   <data name="Col_Actions" xml:space="preserve"><value>Aktionen</value></data>
+  <data name="Tooltip_Edit" xml:space="preserve"><value>Bearbeiten</value></data>
+  <data name="Modal_Edit_Title" xml:space="preserve"><value>Profil bearbeiten</value></data>
+  <data name="Field_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="Field_NewPin" xml:space="preserve"><value>Neuer PIN</value></data>
+  <data name="Field_ConfirmPin" xml:space="preserve"><value>PIN bestätigen</value></data>
+  <data name="Pin_Optional" xml:space="preserve"><value>Leer lassen, um den PIN nicht zu ändern</value></data>
   <data name="Tooltip_ManageDevices" xml:space="preserve"><value>Geräte verwalten</value></data>
   <data name="Modal_Devices_Title" xml:space="preserve"><value>Weisen Sie Geräte zu</value></data>
   <data name="Btn_Cancel" xml:space="preserve"><value>Abbrechen</value></data>

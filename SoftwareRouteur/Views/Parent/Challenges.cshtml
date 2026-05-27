@@ -148,6 +148,7 @@
                         }
                     }
                     <div class="sh-challenge-card-actions">
+                        <!-- TODO: view-details route not implemented — all details (title, description, proof, reward) are already shown inline above; add GET /parent/challenges/{id} before enabling a dedicated view button -->
                         <form asp-action="ChallengeApprove" asp-route-id="@c.Id" method="post" class="sh-form-inline">
                             <button type="submit" class="sh-btn-primary">
                                 <i class="bi bi-check-lg"></i> @Localizer["Btn_Approve"]

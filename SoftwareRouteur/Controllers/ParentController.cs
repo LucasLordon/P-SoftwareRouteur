@@ -147,6 +147,45 @@ public class ParentController : Controller
         return RedirectToAction("Profils");
     }
 
+    [HttpPost("profils/edit/{id:int}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfil(int id, string displayName, string? newPin, string? confirmPin)
+    {
+        var profile = _context.Profiles.FirstOrDefault(p => p.Id == id && p.Role == "child");
+        if (profile == null)
+        {
+            TempData["Error"] = _localizer["Error_InvalidProfile"].Value;
+            return RedirectToAction("Profils");
+        }
+
+        if (string.IsNullOrWhiteSpace(displayName))
+        {
+            TempData["Error"] = _localizer["Error_FieldsRequired"].Value;
+            return RedirectToAction("Profils");
+        }
+
+        if (!string.IsNullOrWhiteSpace(newPin))
+        {
+            if (!PinRegex.IsMatch(newPin))
+            {
+                TempData["Error"] = _localizer["Profile_Error_PinFormat"].Value;
+                return RedirectToAction("Profils");
+            }
+            if (newPin != confirmPin)
+            {
+                TempData["Error"] = _localizer["Profile_Error_PinMismatch"].Value;
+                return RedirectToAction("Profils");
+            }
+            profile.PinHash = BCrypt.Net.BCrypt.HashPassword(newPin);
+        }
+
+        profile.DisplayName = displayName.Trim();
+        await _context.SaveChangesAsync();
+
+        TempData["Success"] = _localizer["Profile_Success_Updated"].Value;
+        return RedirectToAction("Profils");
+    }
+
     [HttpGet("challenges")]
     public IActionResult Challenges()
     {
@@ -579,6 +618,63 @@ public class ParentController : Controller
         return RedirectToAction("Regles");
     }
 
+    [HttpPost("regles/profile/edit/{id:int}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfileRule(int id, string ruleType, string destination, string action)
+    {
+        var rule = _context.ProfileFirewallRules
+            .Include(r => r.Profile)
+            .FirstOrDefault(r => r.Id == id && r.Profile!.Role == "child");
+
+        if (rule == null)
+        {
+            TempData["Error"] = _localizer["Error_RuleNotFound"].Value;
+            return RedirectToAction("Regles");
+        }
+
+        if (string.IsNullOrWhiteSpace(destination) || string.IsNullOrWhiteSpace(ruleType) || string.IsNullOrWhiteSpace(action))
+        {
+            TempData["Error"] = _localizer["Error_FieldsRequired"].Value;
+            return RedirectToAction("Regles");
+        }
+
+        var profile = rule.Profile!;
+        var oldDestination = rule.Destination;
+        var oldAction = rule.Action;
+        var needsOpnsenseUpdate = !string.Equals(oldDestination, destination, StringComparison.OrdinalIgnoreCase) || oldAction != action;
+
+        if (needsOpnsenseUpdate)
+        {
+            var conflict = _context.ProfileFirewallRules
+                .FirstOrDefault(r => r.Id != id && r.ProfileId == rule.ProfileId &&
+                                     r.Destination.ToLower() == destination.ToLower());
+            if (conflict != null)
+            {
+                TempData["Error"] = string.Format(_localizer["Error_ConflictDuplicate"].Value,
+                    destination, profile.DisplayName);
+                return RedirectToAction("Regles");
+            }
+
+            if (oldAction == "deny" && !string.IsNullOrEmpty(profile.OpnsenseBlockAliasUuid))
+                await _opnsense.RemoveFromProfileBlocklistAsync(profile.OpnsenseBlockAliasUuid, oldDestination);
+            else if (oldAction == "allow" && !string.IsNullOrEmpty(profile.OpnsenseAllowAliasUuid))
+                await _opnsense.RemoveFromProfileWhitelistAsync(profile.OpnsenseAllowAliasUuid, oldDestination);
+
+            if (action == "deny" && !string.IsNullOrEmpty(profile.OpnsenseBlockAliasUuid))
+                await _opnsense.AddToProfileBlocklistAsync(profile.OpnsenseBlockAliasUuid, destination);
+            else if (action == "allow" && !string.IsNullOrEmpty(profile.OpnsenseAllowAliasUuid))
+                await _opnsense.AddToProfileWhitelistAsync(profile.OpnsenseAllowAliasUuid, destination);
+        }
+
+        rule.RuleType = ruleType;
+        rule.Destination = destination;
+        rule.Action = action;
+        await _context.SaveChangesAsync();
+
+        TempData["Success"] = _localizer["ProfileRule_Success_Updated"].Value;
+        return RedirectToAction("Regles");
+    }
+
     [HttpPost("regles/device/delete/{id}")]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> DeleteDeviceRule(int id)
@@ -621,6 +717,63 @@ public class ParentController : Controller
         await _context.SaveChangesAsync();
 
         TempData["Success"] = _localizer["Success_Deleted"].Value;
+        return RedirectToAction("Regles");
+    }
+
+    [HttpPost("regles/device/edit/{id:int}")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditDeviceRule(int id, string ruleType, string destination, string action)
+    {
+        var rule = _context.FirewallRules
+            .Include(r => r.Client)
+            .ThenInclude(c => c!.Profile)
+            .FirstOrDefault(r => r.Id == id);
+
+        if (rule == null || rule.Client == null || rule.Client.Profile == null || rule.Client.Profile.Role != "child")
+        {
+            TempData["Error"] = _localizer["Error_RuleNotFound"].Value;
+            return RedirectToAction("Regles");
+        }
+
+        if (string.IsNullOrWhiteSpace(destination) || string.IsNullOrWhiteSpace(ruleType) || string.IsNullOrWhiteSpace(action))
+        {
+            TempData["Error"] = _localizer["Error_FieldsRequired"].Value;
+            return RedirectToAction("Regles");
+        }
+
+        var oldDestination = rule.Destination;
+        var oldAction = rule.Action;
+        var needsOpnsenseUpdate = !string.Equals(oldDestination, destination, StringComparison.OrdinalIgnoreCase) || oldAction != action;
+
+        if (needsOpnsenseUpdate)
+        {
+            var conflict = _context.FirewallRules
+                .FirstOrDefault(r => r.Id != id && r.ClientId == rule.ClientId &&
+                                     r.Destination.ToLower() == destination.ToLower());
+            if (conflict != null)
+            {
+                TempData["Error"] = string.Format(_localizer["Error_ConflictDuplicate"].Value,
+                    destination, rule.Client.Hostname);
+                return RedirectToAction("Regles");
+            }
+
+            if (oldAction == "deny")
+                await _opnsense.RemoveFromAliasAsync(rule.ClientId, oldDestination);
+            else if (oldAction == "allow")
+                await _opnsense.RemoveFromWhitelistAsync(rule.ClientId, oldDestination);
+
+            if (action == "deny")
+                await _opnsense.AddToAliasAsync(rule.ClientId, destination);
+            else if (action == "allow")
+                await _opnsense.AddToWhitelistAsync(rule.ClientId, destination);
+        }
+
+        rule.RuleType = ruleType;
+        rule.Destination = destination;
+        rule.Action = action;
+        await _context.SaveChangesAsync();
+
+        TempData["Success"] = _localizer["DeviceRule_Success_Updated"].Value;
         return RedirectToAction("Regles");
     }
 

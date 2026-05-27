@@ -43,4 +43,9 @@
   <data name="Schedule_Success_Updated" xml:space="preserve"><value>Time window updated successfully.</value></data>
   <data name="TempAuth_Error_InvalidAllowType" xml:space="preserve"><value>Invalid authorization type.</value></data>
   <data name="TempAuth_Error_InvalidAllowDestination" xml:space="preserve"><value>Invalid destination for the selected type.</value></data>
+  <data name="Profile_Success_Updated" xml:space="preserve"><value>Profile updated successfully.</value></data>
+  <data name="Profile_Error_PinFormat" xml:space="preserve"><value>The PIN must contain exactly 4 digits.</value></data>
+  <data name="Profile_Error_PinMismatch" xml:space="preserve"><value>The PIN codes do not match.</value></data>
+  <data name="ProfileRule_Success_Updated" xml:space="preserve"><value>Profile rule updated successfully.</value></data>
+  <data name="DeviceRule_Success_Updated" xml:space="preserve"><value>Device rule updated successfully.</value></data>
 </root>

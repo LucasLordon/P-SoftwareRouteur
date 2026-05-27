@@ -36,6 +36,10 @@
                     <td>@profile.DisplayName</td>
                     <td>@deviceCount</td>
                     <td class="sh-col-actions">
+                        <button class="sh-action-btn" title="@Localizer["Tooltip_Edit"]"
+                                onclick="openEditProfilModal(@profile.Id, '@Html.Raw(profile.DisplayName.Replace("'","\\\'"))')">
+                            <i class="bi bi-pencil"></i>
+                        </button>
                         <button type="button" class="sh-action-btn"
                                 data-profile-id="@profile.Id"
                                 data-profile-name="@profile.DisplayName"
@@ -56,6 +60,41 @@
             <p>@Localizer["Empty"]</p>
         </div>
     }
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="sh-modal-backdrop" id="editProfilModal" onclick="if(event.target===this) this.classList.remove('show')">
+    <div class="sh-modal">
+        <div class="sh-modal-header">
+            <h3 class="sh-modal-title">@Localizer["Modal_Edit_Title"]</h3>
+            <button class="sh-modal-close" onclick="document.getElementById('editProfilModal').classList.remove('show')">&times;</button>
+        </div>
+        <form method="post" id="editProfilForm" action="">
+            @Html.AntiForgeryToken()
+            <div class="sh-modal-body">
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_Name"]</label>
+                    <input type="text" name="displayName" id="editProfilName" class="sh-input" required maxlength="100"/>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_NewPin"]</label>
+                    <input type="password" name="newPin" id="editProfilPin" class="sh-input" maxlength="4" pattern="\d{4}" autocomplete="new-password"/>
+                    <small class="sh-form-hint">@Localizer["Pin_Optional"]</small>
+                </div>
+                <div class="sh-form-group">
+                    <label class="sh-form-label">@Localizer["Field_ConfirmPin"]</label>
+                    <input type="password" name="confirmPin" id="editProfilConfirmPin" class="sh-input" maxlength="4" pattern="\d{4}" autocomplete="new-password"/>
+                </div>
+            </div>
+            <div class="sh-modal-footer">
+                <button type="button" class="sh-btn-cancel"
+                        onclick="document.getElementById('editProfilModal').classList.remove('show')">@Localizer["Btn_Cancel"]</button>
+                <button type="submit" class="sh-btn-submit">
+                    <i class="bi bi-check-lg"></i> @Localizer["Btn_Save"]
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Device Assignment Modal -->
@@ -88,6 +127,14 @@
         var allClientsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(
             allClients.Select(c => new { id = c.Id, hostname = c.Hostname, ipAddress = c.IpAddress, profileId = c.ProfileId })
         ));
+
+        function openEditProfilModal(id, displayName) {
+            document.getElementById('editProfilForm').action = '/parent/profils/edit/' + id;
+            document.getElementById('editProfilName').value = displayName;
+            document.getElementById('editProfilPin').value = '';
+            document.getElementById('editProfilConfirmPin').value = '';
+            document.getElementById('editProfilModal').classList.add('show');
+        }
 
         function openDeviceModal(btn) {
             var profileId = parseInt(btn.dataset.profileId);

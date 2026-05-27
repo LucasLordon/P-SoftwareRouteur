@@ -17,5 +17,13 @@
   <data name="Pin_Active" xml:space="preserve"><value>Activé</value></data>
   <data name="Pin_Inactive" xml:space="preserve"><value>Désactivé</value></data>
   <data name="Tooltip_View" xml:space="preserve"><value>Voir</value></data>
+  <data name="Tooltip_Edit" xml:space="preserve"><value>Modifier</value></data>
+  <data name="Modal_Edit_Title" xml:space="preserve"><value>Modifier le profil</value></data>
+  <data name="Field_Name" xml:space="preserve"><value>Prénom</value></data>
+  <data name="Field_NewPin" xml:space="preserve"><value>Nouveau PIN</value></data>
+  <data name="Field_ConfirmPin" xml:space="preserve"><value>Confirmer le PIN</value></data>
+  <data name="Pin_Optional" xml:space="preserve"><value>Laisser vide pour ne pas modifier le PIN</value></data>
+  <data name="Btn_Cancel" xml:space="preserve"><value>Annuler</value></data>
+  <data name="Btn_Save" xml:space="preserve"><value>Enregistrer</value></data>
   <data name="Empty" xml:space="preserve"><value>Aucun enfant rattaché à votre profil.</value></data>
 </root>

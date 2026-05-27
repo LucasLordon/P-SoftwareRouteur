@@ -43,4 +43,9 @@
   <data name="Schedule_Success_Updated" xml:space="preserve"><value>Zeitfenster erfolgreich aktualisiert.</value></data>
   <data name="TempAuth_Error_InvalidAllowType" xml:space="preserve"><value>Ungültiger Freigabetyp.</value></data>
   <data name="TempAuth_Error_InvalidAllowDestination" xml:space="preserve"><value>Ungültiges Ziel für den gewählten Typ.</value></data>
+  <data name="Profile_Success_Updated" xml:space="preserve"><value>Profil erfolgreich aktualisiert.</value></data>
+  <data name="Profile_Error_PinFormat" xml:space="preserve"><value>Der PIN muss genau 4 Ziffern enthalten.</value></data>
+  <data name="Profile_Error_PinMismatch" xml:space="preserve"><value>Die PINs stimmen nicht überein.</value></data>
+  <data name="ProfileRule_Success_Updated" xml:space="preserve"><value>Profilregel erfolgreich aktualisiert.</value></data>
+  <data name="DeviceRule_Success_Updated" xml:space="preserve"><value>Geräteregel erfolgreich aktualisiert.</value></data>
 </root>
